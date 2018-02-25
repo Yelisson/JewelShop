@@ -24,7 +24,6 @@ namespace JewelShopService.ImplementationsList
             List<HangarViewModel> result = new List<HangarViewModel>();
             for (int i = 0; i < source.Hangars.Count; ++i)
             {
-                // требуется дополнительно получить список компонентов на складе и их количество
                 List<HangarElementViewModel> hangarComponents = new List<HangarElementViewModel>();
                 for (int j = 0; j < source.HangarElements.Count; ++j)
                 {
@@ -53,7 +52,6 @@ namespace JewelShopService.ImplementationsList
                 {
                     id = source.Hangars[i].id,
                     hangarName = source.Hangars[i].hangarName,
-                   // HangarElement = hangarComponents
                 });
             }
             return result;
@@ -63,7 +61,6 @@ namespace JewelShopService.ImplementationsList
         {
             for (int i = 0; i < source.Hangars.Count; ++i)
             {
-                // требуется дополнительно получить список компонентов на складе и их количество
                 List<HangarElementViewModel> HangarComponents = new List<HangarElementViewModel>();
                 for (int j = 0; j < source.HangarElements.Count; ++j)
                 {
@@ -94,7 +91,6 @@ namespace JewelShopService.ImplementationsList
                     {
                         id = source.Hangars[i].id,
                         hangarName = source.Hangars[i].hangarName,
-                        //HangarElement = HangarComponents
                     };
                 }
             }
