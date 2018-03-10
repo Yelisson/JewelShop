@@ -42,18 +42,18 @@ namespace JewelShopView
                 List<HangarViewModel> listC = serviceS.GetList();
                 if (listC != null)
                 {
-                    comboBox1.DisplayMember = "hangarName";
-                    comboBox1.ValueMember = "id";
-                    comboBox1.DataSource = listC;
-                    comboBox1.SelectedItem = null;
+                    comboBoxHangar.DisplayMember = "hangarName";
+                    comboBoxHangar.ValueMember = "id";
+                    comboBoxHangar.DataSource = listC;
+                    comboBoxHangar.SelectedItem = null;
                 }
                 List<ElementViewModel> listS = serviceC.GetList();
                 if (listS != null)
                 {
-                    comboBox2.DisplayMember = "elementName";
-                    comboBox2.ValueMember = "id";
-                    comboBox2.DataSource = listS;
-                    comboBox2.SelectedItem = null;
+                    comboBoxElement.DisplayMember = "elementName";
+                    comboBoxElement.ValueMember = "id";
+                    comboBoxElement.DataSource = listS;
+                    comboBoxElement.SelectedItem = null;
                 }
             }
             catch (Exception ex)
@@ -62,19 +62,19 @@ namespace JewelShopView
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(textBox1.Text))
+            if (string.IsNullOrEmpty(textBoxCount.Text))
             {
                 MessageBox.Show("Заполните поле Количество", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (comboBox1.SelectedValue == null)
+            if (comboBoxHangar.SelectedValue == null)
             {
                 MessageBox.Show("Выберите компонент", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (comboBox2.SelectedValue == null)
+            if (comboBoxElement.SelectedValue == null)
             {
                 MessageBox.Show("Выберите склад", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -83,9 +83,9 @@ namespace JewelShopView
             {
                 serviceM.PutComponentOnStock(new HangarElementBindingModel
                 {
-                    elementId = Convert.ToInt32(comboBox2.SelectedValue),
-                    hangarId = Convert.ToInt32(comboBox1.SelectedValue),
-                    Count = Convert.ToInt32(textBox1.Text)
+                    elementId = Convert.ToInt32(comboBoxElement.SelectedValue),
+                    hangarId = Convert.ToInt32(comboBoxHangar.SelectedValue),
+                    Count = Convert.ToInt32(textBoxCount.Text)
                 });
                 MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 DialogResult = DialogResult.OK;
@@ -97,7 +97,7 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();

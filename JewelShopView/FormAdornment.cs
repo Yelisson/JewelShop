@@ -43,8 +43,8 @@ namespace JewelShopView
                     AdornmentViewModel view = service.GetElement(id.Value);
                     if (view != null)
                     {
-                        textBox1.Text = view.adornmentName;
-                        textBox2.Text = view.cost.ToString();
+                        textBoxName.Text = view.adornmentName;
+                        textBoxPrice.Text = view.cost.ToString();
                         productComponents = view.ProductComponent;
                         LoadData();
                     }
@@ -67,12 +67,12 @@ namespace JewelShopView
             {
                 if (productComponents != null)
                 {
-                    dataGridView.DataSource = null;
-                    dataGridView.DataSource = productComponents;
-                    dataGridView.Columns[0].Visible = false;
-                    dataGridView.Columns[1].Visible = false;
-                    dataGridView.Columns[2].Visible = false;
-                    dataGridView.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    dataGridViewComponents.DataSource = null;
+                    dataGridViewComponents.DataSource = productComponents;
+                    dataGridViewComponents.Columns[0].Visible = false;
+                    dataGridViewComponents.Columns[1].Visible = false;
+                    dataGridViewComponents.Columns[2].Visible = false;
+                    dataGridViewComponents.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace JewelShopView
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonAdd_Click(object sender, EventArgs e)
         {
             var form = Container.Resolve<FormAdornmentElement>();
             if (form.ShowDialog() == DialogResult.OK)
@@ -98,15 +98,15 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonDel_Click(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count == 1)
+            if (dataGridViewComponents.SelectedRows.Count == 1)
             {
                 if (MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     try
                     {
-                        productComponents.RemoveAt(dataGridView.SelectedRows[0].Cells[0].RowIndex);
+                        productComponents.RemoveAt(dataGridViewComponents.SelectedRows[0].Cells[0].RowIndex);
                     }
                     catch (Exception ex)
                     {
@@ -118,33 +118,33 @@ namespace JewelShopView
 
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void buttonUpd_Click(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count == 1)
+            if (dataGridViewComponents.SelectedRows.Count == 1)
             {
                 var form = Container.Resolve<FormAdornmentElement>();
-                form.Model = productComponents[dataGridView.SelectedRows[0].Cells[0].RowIndex];
+                form.Model = productComponents[dataGridViewComponents.SelectedRows[0].Cells[0].RowIndex];
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    productComponents[dataGridView.SelectedRows[0].Cells[0].RowIndex] = form.Model;
+                    productComponents[dataGridViewComponents.SelectedRows[0].Cells[0].RowIndex] = form.Model;
                     LoadData();
                 }
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonRenew_Click(object sender, EventArgs e)
         {
             LoadData();
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(textBox1.Text))
+            if (string.IsNullOrEmpty(textBoxName.Text))
             {
                 MessageBox.Show("Заполните название", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(textBox2.Text))
+            if (string.IsNullOrEmpty(textBoxPrice.Text))
             {
                 MessageBox.Show("Заполните цену", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -172,8 +172,8 @@ namespace JewelShopView
                     service.UpdElement(new AdornmentBindingModel
                     {
                         id = id.Value,
-                        adornmentName = textBox1.Text,
-                        cost = Convert.ToInt32(textBox2.Text),
+                        adornmentName = textBoxName.Text,
+                        cost = Convert.ToInt32(textBoxPrice.Text),
                         AdornmentComponent = productComponentBM
                     });
                 }
@@ -181,8 +181,8 @@ namespace JewelShopView
                 {
                     service.AddElement(new AdornmentBindingModel
                     {
-                        adornmentName = textBox1.Text,
-                        cost = Convert.ToInt32(textBox2.Text),
+                        adornmentName = textBoxName.Text,
+                        cost = Convert.ToInt32(textBoxPrice.Text),
                         AdornmentComponent = productComponentBM
                     });
                 }
@@ -196,7 +196,7 @@ namespace JewelShopView
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();

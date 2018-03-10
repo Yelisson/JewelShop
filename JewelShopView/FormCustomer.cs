@@ -41,7 +41,7 @@ namespace JewelShopView
                     CustomerViewModel view = service.GetElement(id.Value);
                     if (view != null)
                     {
-                        textBox1.Text = view.customerFIO;
+                        textBoxFIO.Text = view.customerFIO;
                     }
                 }
                 catch (Exception ex)
@@ -51,9 +51,9 @@ namespace JewelShopView
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(textBox1.Text))
+            if (string.IsNullOrEmpty(textBoxFIO.Text))
             {
                 MessageBox.Show("Заполните ФИО", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -65,14 +65,14 @@ namespace JewelShopView
                     service.UpdElement(new CustomerBindingModel
                     {
                         id = id.Value,
-                        customerFIO = textBox1.Text
+                        customerFIO = textBoxFIO.Text
                     });
                 }
                 else
                 {
                     service.AddElement(new CustomerBindingModel
                     {
-                        customerFIO = textBox1.Text
+                        customerFIO = textBoxFIO.Text
                     });
                 }
                 MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -85,7 +85,7 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();

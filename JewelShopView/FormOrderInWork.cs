@@ -35,9 +35,9 @@ namespace JewelShopView
             this.serviceM = serviceM;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedValue == null)
+            if (comboBoxFIO.SelectedValue == null)
             {
                 MessageBox.Show("Выберите исполнителя", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -47,7 +47,7 @@ namespace JewelShopView
                 serviceM.TakeOrderInWork(new ProdOrderBindingModel
                 {
                     id = id.Value,
-                    customerId = Convert.ToInt32(comboBox1.SelectedValue)
+                    customerId = Convert.ToInt32(comboBoxFIO.SelectedValue)
                 });
                 MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 DialogResult = DialogResult.OK;
@@ -59,7 +59,7 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();
@@ -77,10 +77,10 @@ namespace JewelShopView
                 List<CustomerViewModel> listI = serviceI.GetList();
                 if (listI != null)
                 {
-                    comboBox1.DisplayMember = "customerFIO";
-                    comboBox1.ValueMember = "id";
-                    comboBox1.DataSource = listI;
-                    comboBox1.SelectedItem = null;
+                    comboBoxFIO.DisplayMember = "customerFIO";
+                    comboBoxFIO.ValueMember = "id";
+                    comboBoxFIO.DataSource = listI;
+                    comboBoxFIO.SelectedItem = null;
                 }
             }
             catch (Exception ex)

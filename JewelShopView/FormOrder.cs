@@ -37,14 +37,14 @@ namespace JewelShopView
 
         private void CalcSum()
         {
-            if (comboBox2.SelectedValue != null && !string.IsNullOrEmpty(textBox1.Text))
+            if (comboBoxAdornment.SelectedValue != null && !string.IsNullOrEmpty(textBoxCount.Text))
             {
                 try
                 {
-                    int id = Convert.ToInt32(comboBox2.SelectedValue);
+                    int id = Convert.ToInt32(comboBoxAdornment.SelectedValue);
                     AdornmentViewModel product = serviceP.GetElement(id);
-                    int count = Convert.ToInt32(textBox1.Text);
-                    textBox2.Text = (count * product.cost).ToString();
+                    int count = Convert.ToInt32(textBoxCount.Text);
+                    textBoxSum.Text = (count * product.cost).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -52,19 +52,19 @@ namespace JewelShopView
                 }
             }
         }
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(textBox1.Text))
+            if (string.IsNullOrEmpty(textBoxCount.Text))
             {
                 MessageBox.Show("Заполните поле Количество", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (comboBox1.SelectedValue == null)
+            if (comboBoxBuyer.SelectedValue == null)
             {
                 MessageBox.Show("Выберите клиента", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (comboBox2.SelectedValue == null)
+            if (comboBoxAdornment.SelectedValue == null)
             {
                 MessageBox.Show("Выберите изделие", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -73,10 +73,10 @@ namespace JewelShopView
             {
                 serviceM.CreateOrder(new ProdOrderBindingModel
                 {
-                    buyerId = Convert.ToInt32(comboBox1.SelectedValue),
-                    adornmentId = Convert.ToInt32(comboBox2.SelectedValue),
-                    count = Convert.ToInt32(textBox1.Text),
-                    sum = Convert.ToInt32(textBox2.Text)
+                    buyerId = Convert.ToInt32(comboBoxBuyer.SelectedValue),
+                    adornmentId = Convert.ToInt32(comboBoxAdornment.SelectedValue),
+                    count = Convert.ToInt32(textBoxCount.Text),
+                    sum = Convert.ToInt32(textBoxSum.Text)
                 });
                 MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 DialogResult = DialogResult.OK;
@@ -88,19 +88,19 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();
         }
 
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBoxAdornment_SelectedIndexChanged(object sender, EventArgs e)
         {
             CalcSum();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void textBoxCount_TextChanged(object sender, EventArgs e)
         {
             CalcSum();
         }
@@ -112,18 +112,18 @@ namespace JewelShopView
                 List<BuyerViewModel> listC = serviceC.GetList();
                 if (listC != null)
                 {
-                    comboBox1.DisplayMember = "buyerFIO";
-                    comboBox1.ValueMember = "id";
-                    comboBox1.DataSource = listC;
-                    comboBox1.SelectedItem = null;
+                    comboBoxBuyer.DisplayMember = "buyerFIO";
+                    comboBoxBuyer.ValueMember = "id";
+                    comboBoxBuyer.DataSource = listC;
+                    comboBoxBuyer.SelectedItem = null;
                 }
                 List<AdornmentViewModel> listP = serviceP.GetList();
                 if (listP != null)
                 {
-                    comboBox2.DisplayMember = "adornmentName";
-                    comboBox2.ValueMember = "id";
-                    comboBox2.DataSource = listP;
-                    comboBox2.SelectedItem = null;
+                    comboBoxAdornment.DisplayMember = "adornmentName";
+                    comboBoxAdornment.ValueMember = "id";
+                    comboBoxAdornment.DataSource = listP;
+                    comboBoxAdornment.SelectedItem = null;
                 }
             }
             catch (Exception ex)

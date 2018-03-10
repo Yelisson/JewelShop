@@ -23,7 +23,7 @@ namespace JewelShopView
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(container.Resolve<Form1>());
+            Application.Run(container.Resolve<FormJewelShop>());
         }
 
         public static IUnityContainer BuildUnityContainer()

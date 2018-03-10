@@ -28,99 +28,99 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.labelHangar = new System.Windows.Forms.Label();
+            this.labelElement = new System.Windows.Forms.Label();
+            this.labelCount = new System.Windows.Forms.Label();
+            this.comboBoxHangar = new System.Windows.Forms.ComboBox();
+            this.comboBoxElement = new System.Windows.Forms.ComboBox();
+            this.textBoxCount = new System.Windows.Forms.TextBox();
+            this.buttonSave = new System.Windows.Forms.Button();
+            this.buttonCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // label1
+            // labelHangar
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Склад:";
+            this.labelHangar.AutoSize = true;
+            this.labelHangar.Location = new System.Drawing.Point(21, 20);
+            this.labelHangar.Name = "labelHangar";
+            this.labelHangar.Size = new System.Drawing.Size(41, 13);
+            this.labelHangar.TabIndex = 0;
+            this.labelHangar.Text = "Склад:";
             // 
-            // label2
+            // labelElement
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 46);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(66, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Компонент:";
+            this.labelElement.AutoSize = true;
+            this.labelElement.Location = new System.Drawing.Point(21, 46);
+            this.labelElement.Name = "labelElement";
+            this.labelElement.Size = new System.Drawing.Size(66, 13);
+            this.labelElement.TabIndex = 1;
+            this.labelElement.Text = "Компонент:";
             // 
-            // label3
+            // labelCount
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 71);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(69, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Количество:";
+            this.labelCount.AutoSize = true;
+            this.labelCount.Location = new System.Drawing.Point(21, 71);
+            this.labelCount.Name = "labelCount";
+            this.labelCount.Size = new System.Drawing.Size(69, 13);
+            this.labelCount.TabIndex = 2;
+            this.labelCount.Text = "Количество:";
             // 
-            // comboBox1
+            // comboBoxHangar
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(95, 17);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(161, 21);
-            this.comboBox1.TabIndex = 3;
+            this.comboBoxHangar.FormattingEnabled = true;
+            this.comboBoxHangar.Location = new System.Drawing.Point(95, 17);
+            this.comboBoxHangar.Name = "comboBoxHangar";
+            this.comboBoxHangar.Size = new System.Drawing.Size(161, 21);
+            this.comboBoxHangar.TabIndex = 3;
             // 
-            // comboBox2
+            // comboBoxElement
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(95, 43);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(161, 21);
-            this.comboBox2.TabIndex = 4;
+            this.comboBoxElement.FormattingEnabled = true;
+            this.comboBoxElement.Location = new System.Drawing.Point(95, 43);
+            this.comboBoxElement.Name = "comboBoxElement";
+            this.comboBoxElement.Size = new System.Drawing.Size(161, 21);
+            this.comboBoxElement.TabIndex = 4;
             // 
-            // textBox1
+            // textBoxCount
             // 
-            this.textBox1.Location = new System.Drawing.Point(95, 68);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(161, 20);
-            this.textBox1.TabIndex = 5;
+            this.textBoxCount.Location = new System.Drawing.Point(95, 68);
+            this.textBoxCount.Name = "textBoxCount";
+            this.textBoxCount.Size = new System.Drawing.Size(161, 20);
+            this.textBoxCount.TabIndex = 5;
             // 
-            // button1
+            // buttonSave
             // 
-            this.button1.Location = new System.Drawing.Point(95, 94);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Сохранить";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonSave.Location = new System.Drawing.Point(95, 94);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(75, 23);
+            this.buttonSave.TabIndex = 6;
+            this.buttonSave.Text = "Сохранить";
+            this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
-            // button2
+            // buttonCancel
             // 
-            this.button2.Location = new System.Drawing.Point(181, 94);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 7;
-            this.button2.Text = "Отмена";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.buttonCancel.Location = new System.Drawing.Point(181, 94);
+            this.buttonCancel.Name = "buttonCancel";
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancel.TabIndex = 7;
+            this.buttonCancel.Text = "Отмена";
+            this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
             // FormPutOnHangar
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(293, 136);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.buttonCancel);
+            this.Controls.Add(this.buttonSave);
+            this.Controls.Add(this.textBoxCount);
+            this.Controls.Add(this.comboBoxElement);
+            this.Controls.Add(this.comboBoxHangar);
+            this.Controls.Add(this.labelCount);
+            this.Controls.Add(this.labelElement);
+            this.Controls.Add(this.labelHangar);
             this.Name = "FormPutOnHangar";
             this.Text = "Пополнить склад";
             this.Load += new System.EventHandler(this.FormPutOnStock_Load);
@@ -131,13 +131,13 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Label labelHangar;
+        private System.Windows.Forms.Label labelElement;
+        private System.Windows.Forms.Label labelCount;
+        private System.Windows.Forms.ComboBox comboBoxHangar;
+        private System.Windows.Forms.ComboBox comboBoxElement;
+        private System.Windows.Forms.TextBox textBoxCount;
+        private System.Windows.Forms.Button buttonSave;
+        private System.Windows.Forms.Button buttonCancel;
     }
 }

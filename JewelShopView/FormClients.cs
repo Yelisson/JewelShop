@@ -40,9 +40,9 @@ namespace JewelShopView
                 List<BuyerViewModel> list = service.GetList();
                 if (list != null)
                 {
-                    dataGridView.DataSource = list;
-                    dataGridView.Columns[0].Visible = false;
-                    dataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    dataGridViewBuyers.DataSource = list;
+                    dataGridViewBuyers.Columns[0].Visible = false;
+                    dataGridViewBuyers.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
             catch (Exception ex)
@@ -51,13 +51,13 @@ namespace JewelShopView
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonRenew_Click(object sender, EventArgs e)
         {
             LoadData();
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonAdd_Click(object sender, EventArgs e)
         {
             var form = Container.Resolve<FormBuyer>();
             if (form.ShowDialog() == DialogResult.OK)
@@ -66,13 +66,13 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonDel_Click(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count == 1)
+            if (dataGridViewBuyers.SelectedRows.Count == 1)
             {
                 if (MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    int id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                    int id = Convert.ToInt32(dataGridViewBuyers.SelectedRows[0].Cells[0].Value);
                     try
                     {
                         service.DelElement(id);
@@ -87,12 +87,12 @@ namespace JewelShopView
 
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void buttonUpd_Click(object sender, EventArgs e)
         {
-            if (dataGridView.SelectedRows.Count == 1)
+            if (dataGridViewBuyers.SelectedRows.Count == 1)
             {
                 var form = Container.Resolve<FormBuyer>();
-                form.Id = Convert.ToInt32(dataGridView.SelectedRows[0].Cells[0].Value);
+                form.Id = Convert.ToInt32(dataGridViewBuyers.SelectedRows[0].Cells[0].Value);
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     LoadData();

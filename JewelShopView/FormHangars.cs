@@ -32,9 +32,9 @@ namespace JewelShopView
             this.service = service;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonSave_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(textBox1.Text))
+            if (string.IsNullOrEmpty(textBoxName.Text))
             {
                 MessageBox.Show("Заполните название", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -46,14 +46,14 @@ namespace JewelShopView
                     service.UpdElement(new HangarBindingModel
                     {
                         id = id.Value,
-                        hangarName = textBox1.Text
+                        hangarName = textBoxName.Text
                     });
                 }
                 else
                 {
                     service.AddElement(new HangarBindingModel
                     {
-                        hangarName = textBox1.Text
+                        hangarName = textBoxName.Text
                     });
                 }
                 MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -66,7 +66,7 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();
@@ -81,12 +81,12 @@ namespace JewelShopView
                     HangarViewModel view = service.GetElement(id.Value);
                     if (view != null)
                     {
-                        textBox1.Text = view.hangarName;
-                        dataGridView1.DataSource = view.hangarName;
-                        dataGridView1.Columns[0].Visible = false;
-                        dataGridView1.Columns[1].Visible = false;
-                        dataGridView1.Columns[2].Visible = false;
-                        dataGridView1.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                        textBoxName.Text = view.hangarName;
+                        dataGridViewElements.DataSource = view.hangarName;
+                        dataGridViewElements.Columns[0].Visible = false;
+                        dataGridViewElements.Columns[1].Visible = false;
+                        dataGridViewElements.Columns[2].Visible = false;
+                        dataGridViewElements.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                     }
                 }
                 catch (Exception ex)

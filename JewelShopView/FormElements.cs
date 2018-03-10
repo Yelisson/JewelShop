@@ -39,9 +39,9 @@ namespace JewelShopView
                 List<ElementViewModel> list = service.GetList();
                 if (list != null)
                 {
-                    dataGridView1.DataSource = list;
-                    dataGridView1.Columns[0].Visible = false;
-                    dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    dataGridViewElements.DataSource = list;
+                    dataGridViewElements.Columns[0].Visible = false;
+                    dataGridViewElements.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace JewelShopView
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonAdd_Click(object sender, EventArgs e)
         {
             var form = Container.Resolve<FormNewElement>();
             if (form.ShowDialog() == DialogResult.OK)
@@ -58,13 +58,13 @@ namespace JewelShopView
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonUpd_Click(object sender, EventArgs e)
         {
 
-            if (dataGridView1.SelectedRows.Count == 1)
+            if (dataGridViewElements.SelectedRows.Count == 1)
             {
                 var form = Container.Resolve<FormNewElement>();
-                form.Id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
+                form.Id = Convert.ToInt32(dataGridViewElements.SelectedRows[0].Cells[0].Value);
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     LoadData();
@@ -72,13 +72,13 @@ namespace JewelShopView
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void buttonDel_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.SelectedRows.Count == 1)
+            if (dataGridViewElements.SelectedRows.Count == 1)
             {
                 if (MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    int id = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value);
+                    int id = Convert.ToInt32(dataGridViewElements.SelectedRows[0].Cells[0].Value);
                     try
                     {
                         service.DelElement(id);
@@ -92,7 +92,7 @@ namespace JewelShopView
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonRenew_Click(object sender, EventArgs e)
         {
             LoadData();
         }
