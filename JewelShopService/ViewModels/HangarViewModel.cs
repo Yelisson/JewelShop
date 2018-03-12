@@ -10,5 +10,7 @@ namespace JewelShopService.ViewModels
     {
         public int id { get; set; }
         public string hangarName { get; set; }
+
+        public List<HangarElementViewModel> HangarElement { get; set; }
     }
 }

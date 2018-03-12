@@ -12,6 +12,7 @@ namespace JewelShopService.ImplementationsList
 {
     public class CustomerServiceList:ICustomerService
     {
+
         private DataListSingleton source;
 
         public CustomerServiceList()
@@ -21,48 +22,38 @@ namespace JewelShopService.ImplementationsList
 
         public List<CustomerViewModel> GetList()
         {
-            List<CustomerViewModel> result = new List<CustomerViewModel>();
-            for (int i = 0; i < source.Customers.Count; ++i)
-            {
-                result.Add(new CustomerViewModel
-                {
-                    id = source.Customers[i].id,
-                    customerFIO = source.Customers[i].customerFIO
-                });
-            }
+            List<CustomerViewModel> result = source.Customers
+                 .Select(rec => new CustomerViewModel
+                 {
+                     id = rec.id,
+                     customerFIO = rec.customerFIO
+                 })
+                 .ToList();
             return result;
         }
 
         public CustomerViewModel GetElement(int id)
         {
-            for (int i = 0; i < source.Customers.Count; ++i)
+            Customer element = source.Customers.FirstOrDefault(rec => rec.id == id);
+            if (element != null)
             {
-                if (source.Customers[i].id == id)
+                return new CustomerViewModel
                 {
-                    return new CustomerViewModel
-                    {
-                        id = source.Customers[i].id,
-                        customerFIO = source.Customers[i].customerFIO
-                    };
-                }
+                    id = element.id,
+                    customerFIO = element.customerFIO
+                };
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(CustomerBindingModel model)
         {
-            int maxId = 0;
-            for (int i = 0; i < source.Customers.Count; ++i)
+            Customer element = source.Customers.FirstOrDefault(rec => rec.customerFIO == model.customerFIO);
+            if (element != null)
             {
-                if (source.Customers[i].id > maxId)
-                {
-                    maxId = source.Customers[i].id;
-                }
-                if (source.Customers[i].customerFIO == model.customerFIO)
-                {
-                    throw new Exception("Уже есть сотрудник с таким ФИО");
-                }
+                throw new Exception("Уже есть сотрудник с таким ФИО");
             }
+            int maxId = source.Customers.Count > 0 ? source.Customers.Max(rec => rec.id) : 0;
             source.Customers.Add(new Customer
             {
                 id = maxId + 1,
@@ -72,37 +63,31 @@ namespace JewelShopService.ImplementationsList
 
         public void UpdElement(CustomerBindingModel model)
         {
-            int index = -1;
-            for (int i = 0; i < source.Customers.Count; ++i)
+            Customer element = source.Customers.FirstOrDefault(rec =>
+                                     rec.customerFIO == model.customerFIO && rec.id != model.id);
+            if (element != null)
             {
-                if (source.Customers[i].id == model.id)
-                {
-                    index = i;
-                }
-                if (source.Customers[i].customerFIO == model.customerFIO &&
-                    source.Customers[i].id != model.id)
-                {
-                    throw new Exception("Уже есть сотрудник с таким ФИО");
-                }
+                throw new Exception("Уже есть сотрудник с таким ФИО");
             }
-            if (index == -1)
+            element = source.Customers.FirstOrDefault(rec => rec.id == model.id);
+            if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            source.Customers[index].customerFIO = model.customerFIO;
+            element.customerFIO = model.customerFIO;
         }
 
         public void DelElement(int id)
         {
-            for (int i = 0; i < source.Customers.Count; ++i)
+            Customer element = source.Customers.FirstOrDefault(rec => rec.id == id);
+            if (element != null)
             {
-                if (source.Customers[i].id == id)
-                {
-                    source.Customers.RemoveAt(i);
-                    return;
-                }
+                source.Customers.Remove(element);
             }
-            throw new Exception("Элемент не найден");
+            else
+            {
+                throw new Exception("Элемент не найден");
+            }
         }
     }
 }
