@@ -12,5 +12,9 @@ namespace JewelShopModel
         public int adornmentId { set; get; }
         public int elementId { get; set; }
         public int count { get; set; }
+
+        public virtual Adornment Adornment { get; set; }
+
+        public virtual Element Element { get; set; }
     }
 }
