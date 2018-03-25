@@ -21,68 +21,31 @@ namespace JewelShopService.ImplementationsList
 
         public List<ProdOrderViewModel> GetList()
         {
-            List<ProdOrderViewModel> result = new List<ProdOrderViewModel>();
-            for (int i = 0; i < source.ProdOrders.Count; ++i)
-            {
-                string buyerFIO = string.Empty;
-                for (int j = 0; j < source.Buyers.Count; ++j)
+            List<ProdOrderViewModel> result = source.ProdOrders
+                .Select(rec => new ProdOrderViewModel
                 {
-                    if (source.Buyers[j].id == source.ProdOrders[i].buyerId)
-                    {
-                        buyerFIO = source.Buyers[j].buyerFIO;
-                        break;
-                    }
-                }
-                string adornmentName = string.Empty;
-                for (int j = 0; j < source.Adornments.Count; ++j)
-                {
-                    if (source.Adornments[j].id == source.ProdOrders[i].adornmentId)
-                    {
-                        adornmentName = source.Adornments[j].adornmentName;
-                        break;
-                    }
-                }
-                string customerFIO = string.Empty;
-                if (source.ProdOrders[i].customerId.HasValue)
-                {
-                    for (int j = 0; j < source.Customers.Count; ++j)
-                    {
-                        if (source.Customers[j].id == source.ProdOrders[i].customerId.Value)
-                        {
-                            customerFIO = source.Customers[j].customerFIO;
-                            break;
-                        }
-                    }
-                }
-                result.Add(new ProdOrderViewModel
-                {
-                    id = source.ProdOrders[i].id,
-                    buyerId = source.ProdOrders[i].buyerId,
-                    buyerFIO = buyerFIO,
-                    adornmentId = source.ProdOrders[i].adornmentId,
-                    adornmentName = adornmentName,
-                    customerId = source.ProdOrders[i].customerId,
-                    customerName = customerFIO,
-                    count = source.ProdOrders[i].count,
-                    sum = source.ProdOrders[i].sum,
-                    DateCreate = source.ProdOrders[i].DateCreate.ToLongDateString(),
-                    DateCustom = source.ProdOrders[i].DateCustom?.ToLongDateString(),
-                    status = source.ProdOrders[i].status.ToString()
-                });
-            }
+                    id = rec.id,
+                    buyerId = rec.buyerId,
+                    adornmentId = rec.adornmentId,
+                    customerId = rec.customerId,
+                    DateCreate = rec.DateCreate.ToLongDateString(),
+                    DateCustom = rec.DateCustom?.ToLongDateString(),
+                    status = rec.status.ToString(),
+                    count = rec.count,
+                    sum = rec.sum,
+                    buyerFIO = source.Buyers
+                                    .FirstOrDefault(recC => recC.id == rec.buyerId)?.buyerFIO,
+                    adornmentName = source.Adornments
+                                    .FirstOrDefault(recP => recP.id == rec.adornmentId)?.adornmentName,
+                    customerName = source.Customers
+                                    .FirstOrDefault(recI => recI.id == rec.customerId)?.customerFIO
+                })
+                .ToList();
             return result;
         }
-
         public void CreateOrder(ProdOrderBindingModel model)
         {
-            int maxId = 0;
-            for (int i = 0; i < source.ProdOrders.Count; ++i)
-            {
-                if (source.ProdOrders[i].id > maxId)
-                {
-                    maxId = source.Buyers[i].id;
-                }
-            }
+            int maxId = source.ProdOrders.Count > 0 ? source.ProdOrders.Max(rec => rec.id) : 0;
             source.ProdOrders.Add(new ProdOrder
             {
                 id = maxId + 1,
@@ -97,132 +60,89 @@ namespace JewelShopService.ImplementationsList
 
         public void TakeOrderInWork(ProdOrderBindingModel model)
         {
-            int index = -1;
-            for (int i = 0; i < source.ProdOrders.Count; ++i)
-            {
-                if (source.ProdOrders[i].id == model.id)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            if (index == -1)
+            ProdOrder element = source.ProdOrders.FirstOrDefault(rec => rec.id == model.id);
+            if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            for (int i = 0; i < source.AdornmentElements.Count; ++i)
+            var productComponents = source.AdornmentElements.Where(rec => rec.adornmentId == element.adornmentId);
+            foreach (var productComponent in productComponents)
             {
-                if (source.AdornmentElements[i].adornmentId == source.ProdOrders[index].adornmentId)
+                int countOnStocks = source.HangarElements
+                                            .Where(rec => rec.elementtId == productComponent.elementId)
+                                            .Sum(rec => rec.count);
+                if (countOnStocks < productComponent.count * element.count)
                 {
-                    int countOnStocks = 0;
-                    for (int j = 0; j < source.HangarElements.Count; ++j)
+                    var componentName = source.Elements
+                                    .FirstOrDefault(rec => rec.id == productComponent.elementId);
+                    throw new Exception("Не достаточно компонента " + componentName?.elementName +
+                        " требуется " + productComponent.count + ", в наличии " + countOnStocks);
+                }
+            }
+            foreach (var productComponent in productComponents)
+            {
+                int countOnStocks = productComponent.count * element.count;
+                var stockComponents = source.HangarElements
+                                            .Where(rec => rec.elementtId == productComponent.elementId);
+                foreach (var stockComponent in stockComponents)
+                {
+                    if (stockComponent.count >= countOnStocks)
                     {
-                        if (source.HangarElements[j].elementtId == source.AdornmentElements[i].elementId)
-                        {
-                            countOnStocks += source.HangarElements[j].count;
-                        }
+                        stockComponent.count -= countOnStocks;
+                        break;
                     }
-                    if (countOnStocks < source.AdornmentElements[i].count * source.ProdOrders[index].count)
+                    else
                     {
-                        for (int j = 0; j < source.Elements.Count; ++j)
-                        {
-                            if (source.Elements[j].id == source.AdornmentElements[i].elementId)
-                            {
-                                throw new Exception("Недостаточно компонента " + source.Elements[j].elementName +
-                                    " требуется " + source.AdornmentElements[i].count* source.ProdOrders[index].count +
-                                    ", в наличии " + countOnStocks);
-                            }
-                        }
+                        countOnStocks -= stockComponent.count;
+                        stockComponent.count = 0;
                     }
                 }
             }
-            for (int i = 0; i < source.AdornmentElements.Count; ++i)
-            {
-                if (source.AdornmentElements[i].adornmentId == source.ProdOrders[index].adornmentId)
-                {
-                    int countOnStocks = source.AdornmentElements[i].count * source.ProdOrders[index].count;
-                    for (int j = 0; j < source.HangarElements.Count; ++j)
-                    {
-                        if (source.HangarElements[j].elementtId == source.AdornmentElements[i].elementId)
-                        {
-                            if (source.HangarElements[j].count >= countOnStocks)
-                            {
-                                source.HangarElements[j].count -= countOnStocks;
-                                break;
-                            }
-                            else
-                            {
-                                countOnStocks -= source.HangarElements[j].count;
-                                source.HangarElements[j].count = 0;
-                            }
-                        }
-                    }
-                }
-            }
-            source.ProdOrders[index].customerId = model.customerId;
-            source.ProdOrders[index].DateCustom = DateTime.Now;
-            source.ProdOrders[index].status = ProdOrderStatus.Выполняетя;
+            element.customerId = model.customerId;
+            element.DateCustom = DateTime.Now;
+            element.status = ProdOrderStatus.Выполняетя;
         }
 
         public void FinishOrder(int id)
         {
-            int index = -1;
-            for (int i = 0; i < source.ProdOrders.Count; ++i)
-            {
-                if (source.Buyers[i].id == id)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            if (index == -1)
+            ProdOrder element = source.ProdOrders.FirstOrDefault(rec => rec.id == id);
+            if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            source.ProdOrders[index].status = ProdOrderStatus.Готов;
+            element.status = ProdOrderStatus.Готов;
         }
 
         public void PayOrder(int id)
         {
-            int index = -1;
-            for (int i = 0; i < source.ProdOrders.Count; ++i)
-            {
-                if (source.Buyers[i].id == id)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            if (index == -1)
+            ProdOrder element = source.ProdOrders.FirstOrDefault(rec => rec.id == id);
+            if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            source.ProdOrders[index].status = ProdOrderStatus.Оплачен;
+            element.status = ProdOrderStatus.Оплачен;
         }
 
         public void PutComponentOnStock(HangarElementBindingModel model)
         {
-            int maxId = 0;
-            for (int i = 0; i < source.HangarElements.Count; ++i)
+            HangarElement element = source.HangarElements
+                                               .FirstOrDefault(rec => rec.hangarId == model.hangarId &&
+                                                                   rec.elementtId == model.elementId);
+            if (element != null)
             {
-                if (source.HangarElements[i].hangarId == model.hangarId &&
-                    source.HangarElements[i].elementtId == model.elementId)
-                {
-                    source.HangarElements[i].count += model.Count;
-                    return;
-                }
-                if (source.HangarElements[i].id > maxId)
-                {
-                    maxId = source.HangarElements[i].id;
-                }
+                element.count += model.Count;
             }
-            source.HangarElements.Add(new HangarElement
+            else
             {
-                id = ++maxId,
-                hangarId = model.hangarId,
-                elementtId = model.elementId,
-                count = model.Count
-            });
+                int maxId = source.HangarElements.Count > 0 ? source.HangarElements.Max(rec => rec.id) : 0;
+                source.HangarElements.Add(new HangarElement
+                {
+                    id = ++maxId,
+                    hangarId = model.hangarId,
+                    elementtId = model.elementId,
+                    count = model.Count
+                });
+            }
         }
     }
 }
