@@ -17,52 +17,41 @@ namespace JewelShopService.ImplementationsList
         {
             source = DataListSingleton.GetInstance();
         }
-  
+
         public List<BuyerViewModel> GetList()
         {
-            List<BuyerViewModel> result = new List<BuyerViewModel>();
-            for (int i = 0; i < source.Buyers.Count; ++i)
-            {
-                result.Add(new BuyerViewModel
-                {
-                    id = source.Buyers[i].id,
-                    buyerFIO = source.Buyers[i].buyerFIO
-                });
-            }
-
+            List<BuyerViewModel> result = source.Buyers
+              .Select(rec => new BuyerViewModel
+              {
+                  id = rec.id,
+                  buyerFIO = rec.buyerFIO
+              })
+              .ToList();
             return result;
         }
 
         public BuyerViewModel GetElement(int id)
         {
-            for (int i = 0; i < source.Buyers.Count; ++i)
+            Buyer element = source.Buyers.FirstOrDefault(rec => rec.id == id);
+            if (element != null)
             {
-                if (source.Buyers[i].id == id)
+                return new BuyerViewModel
                 {
-                    return new BuyerViewModel
-                    {
-                        id = source.Buyers[i].id,
-                        buyerFIO = source.Buyers[i].buyerFIO
-                    };
-                }
+                    id = element.id,
+                    buyerFIO = element.buyerFIO
+                };
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(BuyerBindingModel model)
         {
-            int maxId = 0;
-            for (int i = 0; i < source.Buyers.Count; ++i)
+            Buyer element = source.Buyers.FirstOrDefault(rec => rec.buyerFIO == model.buyerFIO);
+            if (element != null)
             {
-                if (source.Buyers[i].id > maxId)
-                {
-                    maxId = source.Buyers[i].id;
-                }
-                if (source.Buyers[i].buyerFIO == model.buyerFIO)
-                {
-                    throw new Exception("Клиент с таким ФИО уже есть");
-                }
+                throw new Exception("Уже есть клиент с таким ФИО");
             }
+            int maxId = source.Buyers.Count > 0 ? source.Buyers.Max(rec => rec.id) : 0;
             source.Buyers.Add(new Buyer
             {
                 id = maxId + 1,
@@ -73,37 +62,31 @@ namespace JewelShopService.ImplementationsList
 
         public void UpdElement(BuyerBindingModel model)
         {
-            int index = -1;
-            for (int i = 0; i < source.Buyers.Count; ++i)
+            Buyer element = source.Buyers.FirstOrDefault(rec =>
+                                   rec.buyerFIO == model.buyerFIO && rec.id != model.id);
+            if (element != null)
             {
-                if (source.Buyers[i].id == model.id)
-                {
-                    index = i;
-                }
-                if (source.Buyers[i].buyerFIO == model.buyerFIO &&
-                    source.Buyers[i].id != model.id)
-                {
-                    throw new Exception("Уже есть клиент с таким ФИО");
-                }
+                throw new Exception("Уже есть клиент с таким ФИО");
             }
-            if (index == -1)
+            element = source.Buyers.FirstOrDefault(rec => rec.id == model.id);
+            if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            source.Buyers[index].buyerFIO = model.buyerFIO;
+            element.buyerFIO = model.buyerFIO;
         }
 
         public void DelElement(int id)
         {
-            for (int i = 0; i < source.Buyers.Count; ++i)
+            Buyer element = source.Buyers.FirstOrDefault(rec => rec.id == id);
+            if (element != null)
             {
-                if (source.Buyers[i].id == id)
-                {
-                    source.Buyers.RemoveAt(i);
-                    return;
-                }
+                source.Buyers.Remove(element);
             }
-            throw new Exception("Элемент не найден");
+            else
+            {
+                throw new Exception("Элемент не найден");
+            }
         }
     }
 }
