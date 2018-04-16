@@ -21,48 +21,38 @@ namespace JewelShopService.ImplementationsList
 
         public List<ElementViewModel> GetList()
         {
-            List<ElementViewModel> result = new List<ElementViewModel>();
-            for (int i = 0; i < source.Elements.Count; ++i)
-            {
-                result.Add(new ElementViewModel
-                {
-                    id = source.Elements[i].id,
-                    elementName = source.Elements[i].elementName
-                });
-            }
+            List<ElementViewModel> result = source.Elements
+               .Select(rec => new ElementViewModel
+               {
+                   id = rec.id,
+                   elementName = rec.elementName
+               })
+               .ToList();
             return result;
         }
 
         public ElementViewModel GetElement(int id)
         {
-            for (int i = 0; i < source.Elements.Count; ++i)
+            Element element = source.Elements.FirstOrDefault(rec => rec.id == id);
+            if (element != null)
             {
-                if (source.Elements[i].id == id)
+                return new ElementViewModel
                 {
-                    return new ElementViewModel
-                    {
-                        id = source.Elements[i].id,
-                        elementName = source.Elements[i].elementName
-                    };
-                }
+                    id = element.id,
+                    elementName = element.elementName
+                };
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(ElementBindingModel model)
         {
-            int maxId = 0;
-            for (int i = 0; i < source.Elements.Count; ++i)
+            Element element = source.Elements.FirstOrDefault(rec => rec.elementName == model.elementName);
+            if (element != null)
             {
-                if (source.Elements[i].id > maxId)
-                {
-                    maxId = source.Elements[i].id;
-                }
-                if (source.Elements[i].elementName == model.elementName)
-                {
-                    throw new Exception("Уже есть компонент с таким названием");
-                }
+                throw new Exception("Уже есть компонент с таким названием");
             }
+            int maxId = source.Elements.Count > 0 ? source.Elements.Max(rec => rec.id) : 0;
             source.Elements.Add(new Element
             {
                 id = maxId + 1,
@@ -72,37 +62,31 @@ namespace JewelShopService.ImplementationsList
 
         public void UpdElement(ElementBindingModel model)
         {
-            int index = -1;
-            for (int i = 0; i < source.Elements.Count; ++i)
+            Element element = source.Elements.FirstOrDefault(rec =>
+                                        rec.elementName == model.elementName && rec.id != model.id);
+            if (element != null)
             {
-                if (source.Elements[i].id == model.id)
-                {
-                    index = i;
-                }
-                if (source.Elements[i].elementName == model.elementName &&
-                    source.Elements[i].id != model.id)
-                {
-                    throw new Exception("Уже есть компонент с таким названием");
-                }
+                throw new Exception("Уже есть компонент с таким названием");
             }
-            if (index == -1)
+            element = source.Elements.FirstOrDefault(rec => rec.id == model.id);
+            if (element == null)
             {
                 throw new Exception("Элемент не найден");
             }
-            source.Elements[index].elementName = model.elementName;
+            element.elementName = model.elementName;
         }
 
         public void DelElement(int id)
         {
-            for (int i = 0; i < source.Elements.Count; ++i)
+            Element element = source.Elements.FirstOrDefault(rec => rec.id == id);
+            if (element != null)
             {
-                if (source.Elements[i].id == id)
-                {
-                    source.Elements.RemoveAt(i);
-                    return;
-                }
+                source.Elements.Remove(element);
             }
-            throw new Exception("Элемент не найден");
+            else
+            {
+                throw new Exception("Элемент не найден");
+            }
         }
     }
 }
