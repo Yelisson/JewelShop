@@ -1,5 +1,6 @@
 ﻿using System;
 using JewelShopService.ImplementationsList;
+using JewelShopService.ImplementationsBD;
 using JewelShopService.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Unity;
 using Unity.Lifetime;
-
+using System.Data.Entity;
+using JewelShopService;
 
 namespace JewelShopView
 {
@@ -29,12 +31,14 @@ namespace JewelShopView
         public static IUnityContainer BuildUnityContainer()
         {
             var currentContainer = new UnityContainer();
-            currentContainer.RegisterType<IAdornmentService, AdornmentServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IBuyerService, BuyerServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<ICustomerService, CustomerServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IElementService, ElementServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IHangarService, HangarServiceList>(new HierarchicalLifetimeManager());
-            currentContainer.RegisterType<IMainService, MainServiceList>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<DbContext, AbstractDataBaseContext>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IBuyerService, BuyerServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IElementService, ElementServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<ICustomerService, CustomerServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IAdornmentService, AdornmentServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IHangarService, HangarServiceBD>(new HierarchicalLifetimeManager());
+            currentContainer.RegisterType<IMainService, MainServiceBD>(new HierarchicalLifetimeManager());
+
 
             return currentContainer;
         }

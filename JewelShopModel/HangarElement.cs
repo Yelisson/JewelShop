@@ -12,5 +12,10 @@ namespace JewelShopModel
         public int hangarId { get; set; }
         public int elementtId { get; set; }
         public int count { get; set; }
+
+
+        public virtual Hangar Hangar { get; set; }
+
+        public virtual Element Element { get; set; }
     }
 }

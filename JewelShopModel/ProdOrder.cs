@@ -17,5 +17,11 @@ namespace JewelShopModel
         public ProdOrderStatus status { get; set; }
         public DateTime DateCreate { get; set; }
         public DateTime? DateCustom { get; set; }
+
+        public virtual Buyer Buyer { get; set; }
+
+        public virtual Adornment Adornment { get; set; }
+
+        public virtual Customer Customer { get; set; }
     }
 }
