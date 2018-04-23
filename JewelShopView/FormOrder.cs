@@ -44,7 +44,7 @@ namespace JewelShopView
                     int id = Convert.ToInt32(comboBoxAdornment.SelectedValue);
                     AdornmentViewModel product = serviceP.GetElement(id);
                     int count = Convert.ToInt32(textBoxCount.Text);
-                    textBoxSum.Text = (count * product.cost).ToString();
+                    textBoxSum.Text = (count *(int) product.cost).ToString();
                 }
                 catch (Exception ex)
                 {

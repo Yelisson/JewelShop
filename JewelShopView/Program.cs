@@ -38,7 +38,7 @@ namespace JewelShopView
             currentContainer.RegisterType<IAdornmentService, AdornmentServiceBD>(new HierarchicalLifetimeManager());
             currentContainer.RegisterType<IHangarService, HangarServiceBD>(new HierarchicalLifetimeManager());
             currentContainer.RegisterType<IMainService, MainServiceBD>(new HierarchicalLifetimeManager());
-
+            currentContainer.RegisterType<IReportService, ReportServiceBD>(new HierarchicalLifetimeManager());
 
             return currentContainer;
         }
