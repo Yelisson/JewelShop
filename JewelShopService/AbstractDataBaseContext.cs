@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace JewelShopService
 {
     [Table("AbstractDatabase")]
-   public  class AbstractDataBaseContext:DbContext
+    public  class AbstractDataBaseContext:DbContext
     {
         public AbstractDataBaseContext()
         {

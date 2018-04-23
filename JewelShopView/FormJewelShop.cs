@@ -1,4 +1,5 @@
-﻿using JewelShopService.Interfaces;
+﻿using JewelShopService.BindingModels;
+using JewelShopService.Interfaces;
 using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -21,11 +22,12 @@ namespace JewelShopView
         public new IUnityContainer Container { get; set; }
 
         private readonly IMainService service;
-
-        public FormJewelShop(IMainService service)
+        private readonly IReportService reportService;
+        public FormJewelShop(IMainService service,IReportService reportService)
         {
             InitializeComponent();
             this.service = service;
+            this.reportService = reportService;
         }
 
         private void LoadData()
@@ -139,6 +141,41 @@ namespace JewelShopView
         private void добавитьКомпонентыНаСкладToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var form = Container.Resolve<FormPutOnHangar>();
+            form.ShowDialog();
+        }
+
+        private void прайсУкрашенийToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Filter = "doc|*.doc|docx|*.docx"
+            };
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    reportService.SaveAdornmentPrice(new ReportBindingModel
+                    {
+                        fileName = sfd.FileName
+                    });
+                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void загруженностьСкладовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormHangarsLoad>();
+            form.ShowDialog();
+        }
+
+        private void заказыПокупателейToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<FormBuyerOrders>();
             form.ShowDialog();
         }
     }
