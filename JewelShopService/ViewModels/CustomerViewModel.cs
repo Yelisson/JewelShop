@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace JewelShopService.ViewModels
 {
+    [DataContract]
   public  class CustomerViewModel
     {
+        [DataMember]
         public int id { get; set; }
+        [DataMember]
         public string customerFIO { get; set; }
     }
 }

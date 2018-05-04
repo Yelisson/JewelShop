@@ -1,17 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace JewelShopService.ViewModels
 {
+    [DataContract]
    public class HangarsLoadViewModel
     {
+        [DataMember]
         public string hangarName { get; set; }
-
+        [DataMember]
         public int totalCount { get; set; }
-
-        public IEnumerable<Tuple<string, int>> Elements { get; set; }
+        [DataMember]
+         public List<HangarsElementLoadViewModel> Elements { get; set; }
     }
+
+    [DataContract]
+    public class HangarsElementLoadViewModel
+    {
+        [DataMember]
+        public string ElementName { get; set; }
+
+        [DataMember]
+        public int Count { get; set; }
+    }
+
 }

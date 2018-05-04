@@ -10,29 +10,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormOrderInWork : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly ICustomerService serviceI;
-
-        private readonly IMainService serviceM;
 
         private int? id;
 
-        public FormOrderInWork(ICustomerService serviceI, IMainService serviceM)
+        public FormOrderInWork()
         {
             InitializeComponent();
-            this.serviceI = serviceI;
-            this.serviceM = serviceM;
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
@@ -44,14 +33,21 @@ namespace JewelShopView
             }
             try
             {
-                serviceM.TakeOrderInWork(new ProdOrderBindingModel
+                var response = APIClient.PostRequest("api/Main/TakeOrderInWork", new ProdOrderBindingModel
                 {
                     id = id.Value,
                     customerId = Convert.ToInt32(comboBoxFIO.SelectedValue)
                 });
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
+                }
             }
             catch (Exception ex)
             {
@@ -74,13 +70,21 @@ namespace JewelShopView
                     MessageBox.Show("Не указан заказ", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
                 }
-                List<CustomerViewModel> listI = serviceI.GetList();
-                if (listI != null)
+                var response = APIClient.GetRequest("api/Customer/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    comboBoxFIO.DisplayMember = "customerFIO";
-                    comboBoxFIO.ValueMember = "id";
-                    comboBoxFIO.DataSource = listI;
-                    comboBoxFIO.SelectedItem = null;
+                    List<CustomerViewModel> list = APIClient.GetElement<List<CustomerViewModel>>(response);
+                    if (list != null)
+                    {
+                        comboBoxFIO.DisplayMember = "customerFIO";
+                        comboBoxFIO.ValueMember = "id";
+                        comboBoxFIO.DataSource = list;
+                        comboBoxFIO.SelectedItem = null;
+                    }
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

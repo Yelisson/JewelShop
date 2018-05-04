@@ -50,9 +50,14 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Word.15.0.4797.1003\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -92,9 +97,9 @@
     <Compile Include="Interfaces\IHangarService.cs" />
     <Compile Include="Interfaces\IMainService.cs" />
     <Compile Include="Interfaces\IReportService.cs" />
-    <Compile Include="Migrations\201803121524003_FirstMigration.cs" />
-    <Compile Include="Migrations\201803121524003_FirstMigration.Designer.cs">
-      <DependentUpon>201803121524003_FirstMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201805041643333_Initial.cs" />
+    <Compile Include="Migrations\201805041643333_Initial.Designer.cs">
+      <DependentUpon>201805041643333_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -126,8 +131,8 @@
     <None Include="Resources\TIFCYR.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201803121524003_FirstMigration.resx">
-      <DependentUpon>201803121524003_FirstMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201805041643333_Initial.resx">
+      <DependentUpon>201805041643333_Initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

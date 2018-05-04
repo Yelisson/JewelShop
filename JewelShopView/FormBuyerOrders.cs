@@ -1,5 +1,6 @@
 ﻿using JewelShopService.BindingModels;
 using JewelShopService.Interfaces;
+using JewelShopService.ViewModels;
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
@@ -10,22 +11,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormBuyerOrders : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IReportService service;
-
-        public FormBuyerOrders(IReportService service)
+        public FormBuyerOrders()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void buttonMakeReport_Click(object sender, EventArgs e)
@@ -42,15 +35,22 @@ namespace JewelShopView
                                             " по " + dateTimePickerTo.Value.ToShortDateString());
                 reportViewer.LocalReport.SetParameters(parameter);
 
-                var dataSource = service.GetBuyerOrders(new ReportBindingModel
+                var response = APIClient.PostRequest("api/Report/GetBuyerOrders", new ReportBindingModel
                 {
                     dateFrom = dateTimePickerFrom.Value,
                     dateTo = dateTimePickerTo.Value
                 });
-                BuyerOrdersModelBindingSource.DataSource = dataSource;
-                ReportDataSource source = new ReportDataSource("DataSetOrders", dataSource);
-                Console.Write(source);
-                reportViewer.LocalReport.DataSources.Add(source);
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    var dataSource = APIClient.GetElement<List<BuyerOrdersModel>>(response);
+                    ReportDataSource source = new ReportDataSource("DataSetOrders", dataSource);
+                    reportViewer.LocalReport.DataSources.Add(source);
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
+                }
+
                 reportViewer.RefreshReport();
             }
             catch (Exception ex)
@@ -74,14 +74,20 @@ namespace JewelShopView
             {
                 try
                 {
-                    service.SaveBuyerOrders(new ReportBindingModel
+                    var response = APIClient.PostRequest("api/Report/SaveBuyerOrders", new ReportBindingModel
                     {
-
                         fileName = sfd.FileName,
                         dateFrom = dateTimePickerFrom.Value,
                         dateTo = dateTimePickerTo.Value
                     });
-                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -89,9 +95,11 @@ namespace JewelShopView
                 }
             }
         }
+        
         private void FormBuyerOrders_Load(object sender, EventArgs e)
         {
             this.reportViewer.RefreshReport();
         }
+        
     }
 }

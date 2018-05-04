@@ -1,18 +1,11 @@
 ﻿using JewelShopModel;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JewelShopService
 {
-    [Table("AbstractDatabase")]
     public  class AbstractDataBaseContext:DbContext
     {
-        public AbstractDataBaseContext()
+        public AbstractDataBaseContext():base("AbstractDatabase")
         {
             Configuration.ProxyCreationEnabled = false;
             Configuration.LazyLoadingEnabled = false;

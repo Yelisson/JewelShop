@@ -1,4 +1,5 @@
-﻿using JewelShopService.Interfaces;
+﻿using JewelShopService.BindingModels;
+using JewelShopService.Interfaces;
 using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,23 +10,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormClients : Form
     {
-
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IBuyerService service;
-
-        public FormClients(IBuyerService service)
+        public FormClients()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormClients_Load(object sender, EventArgs e)
@@ -37,12 +29,20 @@ namespace JewelShopView
         {
             try
             {
-                List<BuyerViewModel> list = service.GetList();
-                if (list != null)
+                var response = APIClient.GetRequest("api/Buyer/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    dataGridViewBuyers.DataSource = list;
-                    dataGridViewBuyers.Columns[0].Visible = false;
-                    dataGridViewBuyers.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    List<BuyerViewModel> list = APIClient.GetElement<List<BuyerViewModel>>(response);
+                    if (list != null)
+                    {
+                        dataGridViewBuyers.DataSource = list;
+                        dataGridViewBuyers.Columns[0].Visible = false;
+                        dataGridViewBuyers.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace JewelShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormBuyer>();
+            var form = new FormBuyer();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
@@ -75,7 +75,11 @@ namespace JewelShopView
                     int id = Convert.ToInt32(dataGridViewBuyers.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        service.DelElement(id);
+                        var response = APIClient.PostRequest("api/Buyer/DelElement", new BuyerBindingModel { id = id });
+                        if (!response.Result.IsSuccessStatusCode)
+                        {
+                            throw new Exception(APIClient.GetError(response));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -84,14 +88,13 @@ namespace JewelShopView
                     LoadData();
                 }
             }
-
         }
 
         private void buttonUpd_Click(object sender, EventArgs e)
         {
             if (dataGridViewBuyers.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormBuyer>();
+                var form = new FormBuyer();
                 form.Id = Convert.ToInt32(dataGridViewBuyers.SelectedRows[0].Cells[0].Value);
                 if (form.ShowDialog() == DialogResult.OK)
                 {

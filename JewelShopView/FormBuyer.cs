@@ -7,26 +7,21 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormBuyer : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
         public int Id { set { id = value; } }
-        private readonly IBuyerService service;
         private int? id;
 
-        public FormBuyer(IBuyerService service)
+        public FormBuyer()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormClient_Load(object sender, EventArgs e)
@@ -35,10 +30,15 @@ namespace JewelShopView
             {
                 try
                 {
-                    BuyerViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    var response = APIClient.GetRequest("api/Buyer/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        textBoxFIO.Text = view.buyerFIO;
+                        var client = APIClient.GetElement<BuyerViewModel>(response);
+                        textBoxFIO.Text = client.buyerFIO;
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -50,7 +50,6 @@ namespace JewelShopView
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-
             if (string.IsNullOrEmpty(textBoxFIO.Text))
             {
                 MessageBox.Show("Заполните ФИО", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -58,9 +57,10 @@ namespace JewelShopView
             }
             try
             {
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    service.UpdElement(new BuyerBindingModel
+                    response = APIClient.PostRequest("api/Buyer/UpdElement", new BuyerBindingModel
                     {
                         id = id.Value,
                         buyerFIO = textBoxFIO.Text
@@ -68,14 +68,21 @@ namespace JewelShopView
                 }
                 else
                 {
-                    service.AddElement(new BuyerBindingModel
+                    response = APIClient.PostRequest("api/Buyer/AddElement", new BuyerBindingModel
                     {
                         buyerFIO = textBoxFIO.Text
                     });
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
+                }
             }
             catch (Exception ex)
             {

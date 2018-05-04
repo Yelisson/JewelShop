@@ -9,26 +9,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormAdornmentElement : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public AdornmentElementViewModel Model { set { model = value; } get { return model; } }
-
-        private readonly IElementService service;
-
         private AdornmentElementViewModel model;
 
-        public FormAdornmentElement(IElementService service)
+        public FormAdornmentElement()
         {
             InitializeComponent();
-            this.service = service;
         }
 
 
@@ -79,13 +70,17 @@ namespace JewelShopView
         {
             try
             {
-                List<ElementViewModel> list = service.GetList();
-                if (list != null)
+                var response = APIClient.GetRequest("api/Element/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
                     comboBoxComponent.DisplayMember = "elementName";
                     comboBoxComponent.ValueMember = "id";
-                    comboBoxComponent.DataSource = list;
+                    comboBoxComponent.DataSource = APIClient.GetElement<List<ElementViewModel>>(response);
                     comboBoxComponent.SelectedItem = null;
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)

@@ -123,7 +123,7 @@ namespace JewelShopService.ImplementationsBD
             {
                 hangarName = stock.hangarName,
                 totalCount = stockCompList.Sum(r => r.count),
-                Elements = stockCompList.Select(r => new Tuple<string, int>(r.Element.elementName, r.count))
+                 Elements = stockCompList.Select(r => new HangarsElementLoadViewModel { ElementName = r.Element.elementName, Count = r.count }).ToList()
             })
                             .ToList();
         }
@@ -201,9 +201,9 @@ namespace JewelShopService.ImplementationsBD
 
                             foreach (var listElem in elem.Elements)
                             {
-                                excelcells.Value2 = listElem.Item1;
+                                excelcells.Value2 = listElem.ElementName;
                                 excelcells.ColumnWidth = 10;
-                                excelcells.get_Offset(0, 1).Value2 = listElem.Item2;
+                                excelcells.get_Offset(0, 1).Value2 = listElem.Count;
                                 excelcells = excelcells.get_Offset(1, 0);
                             }
                         }
