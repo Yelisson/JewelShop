@@ -24,29 +24,24 @@ namespace JewelShopView
         {
             try
             {
-                var response = APIClient.GetRequest("api/Report/GetHangarsLoad");
-                if (response.Result.IsSuccessStatusCode)
+                dataGridViewHangars.Rows.Clear();
+                foreach (var elem in Task.Run(() => APIClient.GetRequestData<List<HangarsLoadViewModel>>("api/Report/GetHangarsLoad")).Result)
                 {
-                    dataGridViewHangars.Rows.Clear();
-                    foreach (var elem in APIClient.GetElement<List<HangarsLoadViewModel>>(response))
+                    dataGridViewHangars.Rows.Add(new object[] { elem.hangarName, "", "" });
+                    foreach (var listElem in elem.Elements)
                     {
-                        dataGridViewHangars.Rows.Add(new object[] { elem.hangarName, "", "" });
-                        foreach (var listElem in elem.Elements)
-                        {
-                            dataGridViewHangars.Rows.Add(new object[] { "", listElem.ElementName, listElem.Count });
-                            //dataGridViewHangars.Rows.Add(new object[] { "", listElem.Item1, listElem.Item2 });
-                        }
-                        dataGridViewHangars.Rows.Add(new object[] { "Итого", "", elem.totalCount });
-                        dataGridViewHangars.Rows.Add(new object[] { });
+                        dataGridViewHangars.Rows.Add(new object[] { "", listElem.ElementName, listElem.Count });
                     }
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
+                    dataGridViewHangars.Rows.Add(new object[] { "Итого", "", elem.totalCount });
+                    dataGridViewHangars.Rows.Add(new object[] { });
                 }
             }
             catch (Exception ex)
             {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -59,25 +54,23 @@ namespace JewelShopView
             };
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                try
+                string fileName = sfd.FileName;
+                Task task = Task.Run(() => APIClient.PostRequestData("api/Report/SaveHangarsLoad", new ReportBindingModel
                 {
-                    var response = APIClient.PostRequest("api/Report/SaveHangarsLoad", new ReportBindingModel
-                    {
-                        fileName = sfd.FileName
-                    });
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
-                }
-                catch (Exception ex)
+                    fileName = fileName
+                }));
+
+                task.ContinueWith((prevTask) => MessageBox.Show("Выполнено", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+                task.ContinueWith((prevTask) =>
                 {
+                    var ex = (Exception)prevTask.Exception;
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                }, TaskContinuationOptions.OnlyOnFaulted);
             }
         }
     }

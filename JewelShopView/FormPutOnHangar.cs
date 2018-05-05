@@ -25,41 +25,30 @@ namespace JewelShopView
         {
             try
             {
-                var responseC = APIClient.GetRequest("api/Element/GetList");
-                if (responseC.Result.IsSuccessStatusCode)
+                List<ElementViewModel> listC = Task.Run(() => APIClient.GetRequestData<List<ElementViewModel>>("api/Element/GetList")).Result;
+                if (listC != null)
                 {
-                    List<ElementViewModel> list = APIClient.GetElement<List<ElementViewModel>>(responseC);
-                    if (list != null)
-                    {
-                        comboBoxElement.DisplayMember = "elementName";
-                        comboBoxElement.ValueMember = "id";
-                        comboBoxElement.DataSource = list;
-                        comboBoxElement.SelectedItem = null;
-                    }
+                    comboBoxElement.DisplayMember = "elementName";
+                    comboBoxElement.ValueMember = "id";
+                    comboBoxElement.DataSource = listC;
+                    comboBoxElement.SelectedItem = null;
                 }
-                else
+
+                List<HangarViewModel> listS = Task.Run(() => APIClient.GetRequestData<List<HangarViewModel>>("api/Hangar/GetList")).Result;
+                if (listS != null)
                 {
-                    throw new Exception(APIClient.GetError(responseC));
-                }
-                var responseS = APIClient.GetRequest("api/Hangar/GetList");
-                if (responseS.Result.IsSuccessStatusCode)
-                {
-                    List<HangarViewModel> list = APIClient.GetElement<List<HangarViewModel>>(responseS);
-                    if (list != null)
-                    {
-                        comboBoxHangar.DisplayMember = "hangarName";
-                        comboBoxHangar.ValueMember = "id";
-                        comboBoxHangar.DataSource = list;
-                        comboBoxHangar.SelectedItem = null;
-                    }
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(responseC));
+                    comboBoxHangar.DisplayMember = "hangarName";
+                    comboBoxHangar.ValueMember = "id";
+                    comboBoxHangar.DataSource = listS;
+                    comboBoxHangar.SelectedItem = null;
                 }
             }
             catch (Exception ex)
             {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -83,32 +72,44 @@ namespace JewelShopView
             }
             try
             {
-                var response = APIClient.PostRequest("api/Main/PutComponentOnStock", new HangarElementBindingModel
+                int componentId = Convert.ToInt32(comboBoxElement.SelectedValue);
+                int stockId = Convert.ToInt32(comboBoxHangar.SelectedValue);
+                int count = Convert.ToInt32(textBoxCount.Text);
+                Task task = Task.Run(() => APIClient.PostRequestData("api/Main/PutComponentOnStock", new HangarElementBindingModel
                 {
-                    elementId = Convert.ToInt32(comboBoxElement.SelectedValue),
-                    hangarId = Convert.ToInt32(comboBoxHangar.SelectedValue),
-                    Count = Convert.ToInt32(textBoxCount.Text)
-                });
-                if (response.Result.IsSuccessStatusCode)
+                    elementId = componentId,
+                    hangarId = stockId,
+                    Count = count
+                }));
+
+                task.ContinueWith((prevTask) => MessageBox.Show("Склад пополнен", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+                task.ContinueWith((prevTask) =>
                 {
-                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
+                    var ex = (Exception)prevTask.Exception;
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }, TaskContinuationOptions.OnlyOnFaulted);
+
+                Close();
             }
             catch (Exception ex)
             {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
+
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

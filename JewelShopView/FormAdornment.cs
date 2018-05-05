@@ -27,26 +27,22 @@ namespace JewelShopView
         }
         private void FormProduct_Load(object sender, EventArgs e)
         {
-            if (id.HasValue)
+             if (id.HasValue)
             {
                 try
                 {
-                    var response = APIClient.GetRequest("api/Adornment/Get/" + id.Value);
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        var product = APIClient.GetElement<AdornmentViewModel>(response);
-                        textBoxName.Text = product.adornmentName;
-                        textBoxPrice.Text = product.cost.ToString();
-                        productComponents = product.ProductComponent;
-                        LoadData();
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
+                    var product = Task.Run(() => APIClient.GetRequestData<AdornmentViewModel>("api/Adornment/Get/" + id.Value)).Result;
+                    textBoxName.Text = product.adornmentName;
+                    textBoxPrice.Text = product.cost.ToString();
+                    productComponents = product.ProductComponent;
+                    LoadData();
                 }
                 catch (Exception ex)
                 {
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -150,60 +146,57 @@ namespace JewelShopView
                 MessageBox.Show("Заполните компоненты", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            try
+            List<AdornmentElementBindingModel> productComponentBM = new List<AdornmentElementBindingModel>();
+            for (int i = 0; i < productComponents.Count; ++i)
             {
-                List<AdornmentElementBindingModel> productComponentBM = new List<AdornmentElementBindingModel>();
-                for (int i = 0; i < productComponents.Count; ++i)
+                productComponentBM.Add(new AdornmentElementBindingModel
                 {
-                    productComponentBM.Add(new AdornmentElementBindingModel
-                    {
-                        id = productComponents[i].id,
-                        adornmentId = productComponents[i].adornmentId,
-                        elementId = productComponents[i].elementId,
-                        count = productComponents[i].count
-                    });
-                }
-                Task<HttpResponseMessage> response;
-                if (id.HasValue)
-                {
-                    response = APIClient.PostRequest("api/Adornment/UpdElement", new AdornmentBindingModel
-                    {
-                        id = id.Value,
-                        adornmentName = textBoxName.Text,
-                        cost = Convert.ToInt32(textBoxPrice.Text),
-                        AdornmentComponent = productComponentBM
-                    });
-                }
-                else
-                {
-                    response = APIClient.PostRequest("api/Adornment/AddElement", new AdornmentBindingModel
-                    {
-                        adornmentName = textBoxName.Text,
-                        cost = Convert.ToInt32(textBoxPrice.Text),
-                        AdornmentComponent = productComponentBM
-                    });
-                }
-                if (response.Result.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
+                    id = productComponents[i].id,
+                    adornmentId = productComponents[i].adornmentId,
+                    elementId = productComponents[i].elementId,
+                    count = productComponents[i].count
+                });
             }
-            catch (Exception ex)
+            string name = textBoxName.Text;
+            int price = Convert.ToInt32(textBoxPrice.Text);
+            Task task;
+            if (id.HasValue)
             {
+                task = Task.Run(() => APIClient.PostRequestData("api/Adornment/UpdElement", new AdornmentBindingModel
+                {
+                    id = id.Value,
+                    adornmentName = name,
+                    cost = price,
+                    AdornmentComponent = productComponentBM
+                }));
+            }
+            else
+            {
+                task = Task.Run(() => APIClient.PostRequestData("api/Adornment/AddElement", new AdornmentBindingModel
+                {
+                    adornmentName = name,
+                    cost = price,
+                    AdornmentComponent = productComponentBM
+                }));
+            }
+            task.ContinueWith((prevTask) => MessageBox.Show("Сохранение прошло успешно. Обновите список", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+               TaskContinuationOptions.OnlyOnRanToCompletion);
+            task.ContinueWith((prevTask) =>
+            {
+                var ex = (Exception)prevTask.Exception;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+
+            Close();
 
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

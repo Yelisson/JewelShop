@@ -33,44 +33,40 @@ namespace JewelShopView
                 MessageBox.Show("Заполните название", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            try
+            string name = textBoxName.Text;
+            Task task;
+            if (id.HasValue)
             {
-                Task<HttpResponseMessage> response;
-                if (id.HasValue)
+                task = Task.Run(() => APIClient.PostRequestData("api/Hangar/UpdElement", new HangarBindingModel
                 {
-                    response = APIClient.PostRequest("api/Hangar/UpdElement", new HangarBindingModel
-                    {
-                        id = id.Value,
-                        hangarName = textBoxName.Text
-                    });
-                }
-                else
-                {
-                    response = APIClient.PostRequest("api/Hangar/AddElement", new HangarBindingModel
-                    {
-                        hangarName = textBoxName.Text
-                    });
-                }
-                if (response.Result.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
+                    id = id.Value,
+                    hangarName = name
+                }));
             }
-            catch (Exception ex)
+            else
             {
+                task = Task.Run(() => APIClient.PostRequestData("api/Hangar/AddElement", new HangarBindingModel
+                {
+                    hangarName = name
+                }));
+            }
+            task.ContinueWith((prevTask) => MessageBox.Show("Сохранение прошло успешно. Обновите список", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+              TaskContinuationOptions.OnlyOnRanToCompletion);
+            task.ContinueWith((prevTask) =>
+            {
+                var ex = (Exception)prevTask.Exception;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
 
@@ -80,24 +76,20 @@ namespace JewelShopView
             {
                 try
                 {
-                    var response = APIClient.GetRequest("api/Hangar/Get/" + id.Value);
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        var stock = APIClient.GetElement<HangarViewModel>(response);
-                        textBoxName.Text = stock.hangarName;
-                        dataGridViewElements.DataSource = stock.HangarElement;
-                        dataGridViewElements.Columns[0].Visible = false;
-                        dataGridViewElements.Columns[1].Visible = false;
-                        dataGridViewElements.Columns[2].Visible = false;
-                        dataGridViewElements.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
+                    var stock = Task.Run(() => APIClient.GetRequestData<HangarViewModel>("api/Hangar/Get/" + id.Value)).Result;
+                    textBoxName.Text = stock.hangarName;
+                    dataGridViewElements.DataSource = stock.HangarElement;
+                    dataGridViewElements.Columns[0].Visible = false;
+                    dataGridViewElements.Columns[1].Visible = false;
+                    dataGridViewElements.Columns[2].Visible = false;
+                    dataGridViewElements.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
                 catch (Exception ex)
                 {
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }

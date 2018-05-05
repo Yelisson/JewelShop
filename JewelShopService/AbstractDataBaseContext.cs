@@ -1,4 +1,5 @@
 ﻿using JewelShopModel;
+using System;
 using System.Data.Entity;
 
 namespace JewelShopService
@@ -27,5 +28,34 @@ namespace JewelShopService
         public virtual DbSet<Hangar> Hangars { get; set; }
 
         public virtual DbSet<HangarElement> HangarElements { get; set; }
+
+        public override int SaveChanges()
+        {
+            try
+            {
+                return base.SaveChanges();
+            }
+            catch (Exception)
+            {
+                foreach (var entry in ChangeTracker.Entries())
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Modified:
+                            entry.State = EntityState.Unchanged;
+                            break;
+                        case EntityState.Deleted:
+                            entry.Reload();
+                            break;
+                        case EntityState.Added:
+                            entry.State = EntityState.Detached;
+                            break;
+                    }
+                }
+                throw;
+            }
+        }
+
     }
+
 }
