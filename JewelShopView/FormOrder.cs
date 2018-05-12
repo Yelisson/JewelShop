@@ -10,29 +10,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormOrder : Form
     {
-
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IBuyerService serviceC;
-
-        private readonly IAdornmentService serviceP;
-
-        private readonly IMainService serviceM;
-
-        public FormOrder(IBuyerService serviceC, IAdornmentService serviceP, IMainService serviceM)
+        public FormOrder()
         {
             InitializeComponent();
-            this.serviceC = serviceC;
-            this.serviceP = serviceP;
-            this.serviceM = serviceM;
         }
 
         private void CalcSum()
@@ -42,9 +27,17 @@ namespace JewelShopView
                 try
                 {
                     int id = Convert.ToInt32(comboBoxAdornment.SelectedValue);
-                    AdornmentViewModel product = serviceP.GetElement(id);
-                    int count = Convert.ToInt32(textBoxCount.Text);
-                    textBoxSum.Text = (count *(int) product.cost).ToString();
+                    var responseP = APIClient.GetRequest("api/Adornment/Get/" + id);
+                    if (responseP.Result.IsSuccessStatusCode)
+                    {
+                        AdornmentViewModel product = APIClient.GetElement<AdornmentViewModel>(responseP);
+                        int count = Convert.ToInt32(textBoxCount.Text);
+                        textBoxSum.Text = (count * (int)product.cost).ToString();
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(responseP));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -71,16 +64,23 @@ namespace JewelShopView
             }
             try
             {
-                serviceM.CreateOrder(new ProdOrderBindingModel
+                var response = APIClient.PostRequest("api/Main/CreateOrder", new ProdOrderBindingModel
                 {
                     buyerId = Convert.ToInt32(comboBoxBuyer.SelectedValue),
                     adornmentId = Convert.ToInt32(comboBoxAdornment.SelectedValue),
                     count = Convert.ToInt32(textBoxCount.Text),
                     sum = Convert.ToInt32(textBoxSum.Text)
                 });
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
+                }
             }
             catch (Exception ex)
             {
@@ -109,21 +109,37 @@ namespace JewelShopView
         {
             try
             {
-                List<BuyerViewModel> listC = serviceC.GetList();
-                if (listC != null)
+                var responseC = APIClient.GetRequest("api/Buyer/GetList");
+                if (responseC.Result.IsSuccessStatusCode)
                 {
-                    comboBoxBuyer.DisplayMember = "buyerFIO";
-                    comboBoxBuyer.ValueMember = "id";
-                    comboBoxBuyer.DataSource = listC;
-                    comboBoxBuyer.SelectedItem = null;
+                    List<BuyerViewModel> list = APIClient.GetElement<List<BuyerViewModel>>(responseC);
+                    if (list != null)
+                    {
+                        comboBoxBuyer.DisplayMember = "buyerFIO";
+                        comboBoxBuyer.ValueMember = "id";
+                        comboBoxBuyer.DataSource = list;
+                        comboBoxBuyer.SelectedItem = null;
+                    }
                 }
-                List<AdornmentViewModel> listP = serviceP.GetList();
-                if (listP != null)
+                else
                 {
-                    comboBoxAdornment.DisplayMember = "adornmentName";
-                    comboBoxAdornment.ValueMember = "id";
-                    comboBoxAdornment.DataSource = listP;
-                    comboBoxAdornment.SelectedItem = null;
+                    throw new Exception(APIClient.GetError(responseC));
+                }
+                var responseP = APIClient.GetRequest("api/Adornment/GetList");
+                if (responseP.Result.IsSuccessStatusCode)
+                {
+                    List<AdornmentViewModel> list = APIClient.GetElement<List<AdornmentViewModel>>(responseP);
+                    if (list != null)
+                    {
+                        comboBoxAdornment.DisplayMember = "adornmentName";
+                        comboBoxAdornment.ValueMember = "id";
+                        comboBoxAdornment.DataSource = list;
+                        comboBoxAdornment.SelectedItem = null;
+                    }
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(responseP));
                 }
             }
             catch (Exception ex)

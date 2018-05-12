@@ -7,32 +7,23 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormAdornment : Form
     {
-
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
         public int Id { set { id = value; } }
-
-        private readonly IAdornmentService service;
-
         private int? id;
 
         private List<AdornmentElementViewModel> productComponents;
 
-        public FormAdornment(IAdornmentService service)
+        public FormAdornment()
         {
             InitializeComponent();
-            this.service = service;
         }
         private void FormProduct_Load(object sender, EventArgs e)
         {
@@ -40,13 +31,18 @@ namespace JewelShopView
             {
                 try
                 {
-                    AdornmentViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    var response = APIClient.GetRequest("api/Adornment/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        textBoxName.Text = view.adornmentName;
-                        textBoxPrice.Text = view.cost.ToString();
-                        productComponents = view.ProductComponent;
+                        var product = APIClient.GetElement<AdornmentViewModel>(response);
+                        textBoxName.Text = product.adornmentName;
+                        textBoxPrice.Text = product.cost.ToString();
+                        productComponents = product.ProductComponent;
                         LoadData();
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)
@@ -83,7 +79,7 @@ namespace JewelShopView
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormAdornmentElement>();
+            var form = new FormAdornmentElement();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 if (form.Model != null)
@@ -122,7 +118,7 @@ namespace JewelShopView
         {
             if (dataGridViewComponents.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormAdornmentElement>();
+                var form = new FormAdornmentElement();
                 form.Model = productComponents[dataGridViewComponents.SelectedRows[0].Cells[0].RowIndex];
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -167,9 +163,10 @@ namespace JewelShopView
                         count = productComponents[i].count
                     });
                 }
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    service.UpdElement(new AdornmentBindingModel
+                    response = APIClient.PostRequest("api/Adornment/UpdElement", new AdornmentBindingModel
                     {
                         id = id.Value,
                         adornmentName = textBoxName.Text,
@@ -179,21 +176,29 @@ namespace JewelShopView
                 }
                 else
                 {
-                    service.AddElement(new AdornmentBindingModel
+                    response = APIClient.PostRequest("api/Adornment/AddElement", new AdornmentBindingModel
                     {
                         adornmentName = textBoxName.Text,
                         cost = Convert.ToInt32(textBoxPrice.Text),
                         AdornmentComponent = productComponentBM
                     });
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

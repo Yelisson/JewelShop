@@ -1,5 +1,6 @@
 ﻿using JewelShopService.BindingModels;
 using JewelShopService.Interfaces;
+using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,41 +10,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormHangarsLoad : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IReportService service;
-        public FormHangarsLoad(IReportService service)
+        public FormHangarsLoad()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void FormHangarsLoad_Load(object sender, EventArgs e)
         {
             try
             {
-                var dict = service.GetHangarsLoad();
-                if (dict != null)
+                var response = APIClient.GetRequest("api/Report/GetHangarsLoad");
+                if (response.Result.IsSuccessStatusCode)
                 {
                     dataGridViewHangars.Rows.Clear();
-                    foreach (var elem in dict)
+                    foreach (var elem in APIClient.GetElement<List<HangarsLoadViewModel>>(response))
                     {
                         dataGridViewHangars.Rows.Add(new object[] { elem.hangarName, "", "" });
                         foreach (var listElem in elem.Elements)
                         {
-                            dataGridViewHangars.Rows.Add(new object[] { "", listElem.Item1, listElem.Item2 });
+                            dataGridViewHangars.Rows.Add(new object[] { "", listElem.ElementName, listElem.Count });
                         }
                         dataGridViewHangars.Rows.Add(new object[] { "Итого", "", elem.totalCount });
                         dataGridViewHangars.Rows.Add(new object[] { });
                     }
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -62,11 +60,18 @@ namespace JewelShopView
             {
                 try
                 {
-                    service.SaveHangarsLoad(new ReportBindingModel
+                    var response = APIClient.PostRequest("api/Report/SaveHangarsLoad", new ReportBindingModel
                     {
                         fileName = sfd.FileName
                     });
-                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
+                    }
                 }
                 catch (Exception ex)
                 {

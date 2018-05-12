@@ -7,29 +7,23 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormHangar : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
 
         public int Id { set { id = value; } }
 
-        private readonly IHangarService service;
-
         private int? id;
 
-        public FormHangar(IHangarService service)
+        public FormHangar()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
@@ -41,9 +35,10 @@ namespace JewelShopView
             }
             try
             {
+                Task<HttpResponseMessage> response;
                 if (id.HasValue)
                 {
-                    service.UpdElement(new HangarBindingModel
+                    response = APIClient.PostRequest("api/Hangar/UpdElement", new HangarBindingModel
                     {
                         id = id.Value,
                         hangarName = textBoxName.Text
@@ -51,14 +46,21 @@ namespace JewelShopView
                 }
                 else
                 {
-                    service.AddElement(new HangarBindingModel
+                    response = APIClient.PostRequest("api/Hangar/AddElement", new HangarBindingModel
                     {
                         hangarName = textBoxName.Text
                     });
                 }
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
+                }
             }
             catch (Exception ex)
             {
@@ -78,15 +80,20 @@ namespace JewelShopView
             {
                 try
                 {
-                    HangarViewModel view = service.GetElement(id.Value);
-                    if (view != null)
+                    var response = APIClient.GetRequest("api/Hangar/Get/" + id.Value);
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        textBoxName.Text = view.hangarName;
-                        dataGridViewElements.DataSource = view.hangarName;
+                        var stock = APIClient.GetElement<HangarViewModel>(response);
+                        textBoxName.Text = stock.hangarName;
+                        dataGridViewElements.DataSource = stock.HangarElement;
                         dataGridViewElements.Columns[0].Visible = false;
                         dataGridViewElements.Columns[1].Visible = false;
                         dataGridViewElements.Columns[2].Visible = false;
                         dataGridViewElements.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
                     }
                 }
                 catch (Exception ex)

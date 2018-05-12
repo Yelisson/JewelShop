@@ -1,4 +1,5 @@
-﻿using JewelShopService.Interfaces;
+﻿using JewelShopService.BindingModels;
+using JewelShopService.Interfaces;
 using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,27 +10,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormAdornments : Form
     {
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IAdornmentService service;
-
-        public FormAdornments(IAdornmentService service)
+        public FormAdornments()
         {
             InitializeComponent();
-            this.service = service;
         }
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormAdornment>();
+            var form = new FormAdornment();
             if (form.ShowDialog() == DialogResult.OK)
             {
                 LoadData();
@@ -44,12 +37,20 @@ namespace JewelShopView
         {
             try
             {
-                List<AdornmentViewModel> list = service.GetList();
-                if (list != null)
+                var response = APIClient.GetRequest("api/Adornment/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    dataGridViewAdornments.DataSource = list;
-                    dataGridViewAdornments.Columns[0].Visible = false;
-                    dataGridViewAdornments.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    List<AdornmentViewModel> list = APIClient.GetElement<List<AdornmentViewModel>>(response);
+                    if (list != null)
+                    {
+                        dataGridViewAdornments.DataSource = list;
+                        dataGridViewAdornments.Columns[0].Visible = false;
+                        dataGridViewAdornments.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -61,7 +62,7 @@ namespace JewelShopView
         {
             if (dataGridViewAdornments.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormAdornment>();
+                var form = new FormAdornment();
                 form.Id = Convert.ToInt32(dataGridViewAdornments.SelectedRows[0].Cells[0].Value);
                 if (form.ShowDialog() == DialogResult.OK)
                 {
@@ -79,7 +80,11 @@ namespace JewelShopView
                     int id = Convert.ToInt32(dataGridViewAdornments.SelectedRows[0].Cells[0].Value);
                     try
                     {
-                        service.DelElement(id);
+                        var response = APIClient.PostRequest("api/Adornment/DelElement", new BuyerBindingModel { id = id });
+                        if (!response.Result.IsSuccessStatusCode)
+                        {
+                            throw new Exception(APIClient.GetError(response));
+                        }
                     }
                     catch (Exception ex)
                     {

@@ -10,50 +10,52 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormPutOnHangar : Form
     {
 
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IHangarService serviceS;
-
-        private readonly IElementService serviceC;
-
-        private readonly IMainService serviceM;
-
-        public FormPutOnHangar(IHangarService serviceS, IElementService serviceC, IMainService serviceM)
+        public FormPutOnHangar()
         {
             InitializeComponent();
-            this.serviceS = serviceS;
-            this.serviceC = serviceC;
-            this.serviceM = serviceM;
         }
 
         private void FormPutOnStock_Load(object sender, EventArgs e)
         {
             try
             {
-                List<HangarViewModel> listC = serviceS.GetList();
-                if (listC != null)
+                var responseC = APIClient.GetRequest("api/Element/GetList");
+                if (responseC.Result.IsSuccessStatusCode)
                 {
-                    comboBoxHangar.DisplayMember = "hangarName";
-                    comboBoxHangar.ValueMember = "id";
-                    comboBoxHangar.DataSource = listC;
-                    comboBoxHangar.SelectedItem = null;
+                    List<ElementViewModel> list = APIClient.GetElement<List<ElementViewModel>>(responseC);
+                    if (list != null)
+                    {
+                        comboBoxElement.DisplayMember = "elementName";
+                        comboBoxElement.ValueMember = "id";
+                        comboBoxElement.DataSource = list;
+                        comboBoxElement.SelectedItem = null;
+                    }
                 }
-                List<ElementViewModel> listS = serviceC.GetList();
-                if (listS != null)
+                else
                 {
-                    comboBoxElement.DisplayMember = "elementName";
-                    comboBoxElement.ValueMember = "id";
-                    comboBoxElement.DataSource = listS;
-                    comboBoxElement.SelectedItem = null;
+                    throw new Exception(APIClient.GetError(responseC));
+                }
+                var responseS = APIClient.GetRequest("api/Hangar/GetList");
+                if (responseS.Result.IsSuccessStatusCode)
+                {
+                    List<HangarViewModel> list = APIClient.GetElement<List<HangarViewModel>>(responseS);
+                    if (list != null)
+                    {
+                        comboBoxHangar.DisplayMember = "hangarName";
+                        comboBoxHangar.ValueMember = "id";
+                        comboBoxHangar.DataSource = list;
+                        comboBoxHangar.SelectedItem = null;
+                    }
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(responseC));
                 }
             }
             catch (Exception ex)
@@ -69,27 +71,34 @@ namespace JewelShopView
                 MessageBox.Show("Заполните поле Количество", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (comboBoxHangar.SelectedValue == null)
+            if (comboBoxElement.SelectedValue == null)
             {
                 MessageBox.Show("Выберите компонент", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (comboBoxElement.SelectedValue == null)
+            if (comboBoxHangar.SelectedValue == null)
             {
                 MessageBox.Show("Выберите склад", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             try
             {
-                serviceM.PutComponentOnStock(new HangarElementBindingModel
+                var response = APIClient.PostRequest("api/Main/PutComponentOnStock", new HangarElementBindingModel
                 {
                     elementId = Convert.ToInt32(comboBoxElement.SelectedValue),
                     hangarId = Convert.ToInt32(comboBoxHangar.SelectedValue),
                     Count = Convert.ToInt32(textBoxCount.Text)
                 });
-                MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                DialogResult = DialogResult.OK;
-                Close();
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
+                }
             }
             catch (Exception ex)
             {

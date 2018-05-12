@@ -10,39 +10,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Unity;
-using Unity.Attributes;
 
 namespace JewelShopView
 {
     public partial class FormJewelShop : Form
     {
-
-        [Dependency]
-        public new IUnityContainer Container { get; set; }
-
-        private readonly IMainService service;
-        private readonly IReportService reportService;
-        public FormJewelShop(IMainService service,IReportService reportService)
+        public FormJewelShop()
         {
             InitializeComponent();
-            this.service = service;
-            this.reportService = reportService;
         }
 
         private void LoadData()
         {
             try
             {
-                List<ProdOrderViewModel> list = service.GetList();
-                if (list != null)
+                var response = APIClient.GetRequest("api/Main/GetList");
+                if (response.Result.IsSuccessStatusCode)
                 {
-                    dataGridViewOrders.DataSource = list;
-                    dataGridViewOrders.Columns[0].Visible = false;
-                    dataGridViewOrders.Columns[1].Visible = false;
-                    dataGridViewOrders.Columns[3].Visible = false;
-                    dataGridViewOrders.Columns[5].Visible = false;
-                    dataGridViewOrders.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    List<ProdOrderViewModel> list = APIClient.GetElement<List<ProdOrderViewModel>>(response);
+                    if (list != null)
+                    {
+                        dataGridViewOrders.DataSource = list;
+                        dataGridViewOrders.Columns[0].Visible = false;
+                        dataGridViewOrders.Columns[1].Visible = false;
+                        dataGridViewOrders.Columns[3].Visible = false;
+                        dataGridViewOrders.Columns[5].Visible = false;
+                        dataGridViewOrders.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                }
+                else
+                {
+                    throw new Exception(APIClient.GetError(response));
                 }
             }
             catch (Exception ex)
@@ -53,7 +51,7 @@ namespace JewelShopView
      
         private void buttonCreateOrder_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormOrder>();
+            var form = new FormOrder();
             form.ShowDialog();
             LoadData();
         }
@@ -62,8 +60,10 @@ namespace JewelShopView
         {
             if (dataGridViewOrders.SelectedRows.Count == 1)
             {
-                var form = Container.Resolve<FormOrderInWork>();
-                form.Id = Convert.ToInt32(dataGridViewOrders.SelectedRows[0].Cells[0].Value);
+                var form = new FormOrderInWork
+                {
+                    Id = Convert.ToInt32(dataGridViewOrders.SelectedRows[0].Cells[0].Value)
+                };
                 form.ShowDialog();
                 LoadData();
             }
@@ -76,8 +76,18 @@ namespace JewelShopView
                 int id = Convert.ToInt32(dataGridViewOrders.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    service.FinishOrder(id);
-                    LoadData();
+                    var response = APIClient.PostRequest("api/Main/FinishOrder", new ProdOrderBindingModel
+                    {
+                        id = id
+                    });
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        LoadData();
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -93,8 +103,18 @@ namespace JewelShopView
                 int id = Convert.ToInt32(dataGridViewOrders.SelectedRows[0].Cells[0].Value);
                 try
                 {
-                    service.PayOrder(id);
-                    LoadData();
+                    var response = APIClient.PostRequest("api/Main/PayOrder", new ProdOrderBindingModel
+                    {
+                        id = id
+                    });
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        LoadData();
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -110,37 +130,37 @@ namespace JewelShopView
 
         private void покупателиToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormClients>();
+            var form = new FormClients();
             form.ShowDialog();
         }
 
         private void элементыToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormElements>();
+            var form = new FormElements();
             form.ShowDialog();
         }
 
         private void украшенияToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormAdornments>();
+            var form = new FormAdornments();
             form.ShowDialog();
         }
 
         private void складыToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormManyHangars>();
+            var form = new FormManyHangars();
             form.ShowDialog();
         }
 
         private void сотрудникиToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormCustomers>();
+            var form = new FormCustomers();
             form.ShowDialog();
         }
 
         private void добавитьКомпонентыНаСкладToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormPutOnHangar>();
+            var form = new FormPutOnHangar();
             form.ShowDialog();
         }
 
@@ -154,11 +174,18 @@ namespace JewelShopView
             {
                 try
                 {
-                    reportService.SaveAdornmentPrice(new ReportBindingModel
+                    var response = APIClient.PostRequest("api/Report/SaveAdornmentPrice", new ReportBindingModel
                     {
                         fileName = sfd.FileName
                     });
-                    MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        throw new Exception(APIClient.GetError(response));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -169,13 +196,13 @@ namespace JewelShopView
 
         private void загруженностьСкладовToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormHangarsLoad>();
+            var form = new FormHangarsLoad();
             form.ShowDialog();
         }
 
         private void заказыПокупателейToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = Container.Resolve<FormBuyerOrders>();
+            var form = new FormBuyerOrders();
             form.ShowDialog();
         }
     }

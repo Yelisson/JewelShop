@@ -1,17 +1,18 @@
-﻿
-using System;
+﻿using System.Runtime.Serialization;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JewelShopService.ViewModels
 {
+    [DataContract]
   public  class AdornmentViewModel
     {
+        [DataMember]
         public int id { get; set; }
+        [DataMember]
         public string adornmentName { get; set; }
+        [DataMember]
         public decimal cost { get; set; }
+        [DataMember]
         public List<AdornmentElementViewModel> ProductComponent { get; set; }
     }
 }
