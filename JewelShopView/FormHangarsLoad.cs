@@ -34,7 +34,6 @@ namespace JewelShopView
                         foreach (var listElem in elem.Elements)
                         {
                             dataGridViewHangars.Rows.Add(new object[] { "", listElem.ElementName, listElem.Count });
-                            //dataGridViewHangars.Rows.Add(new object[] { "", listElem.Item1, listElem.Item2 });
                         }
                         dataGridViewHangars.Rows.Add(new object[] { "Итого", "", elem.totalCount });
                         dataGridViewHangars.Rows.Add(new object[] { });
