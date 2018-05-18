@@ -25,7 +25,8 @@ namespace JewelShopService.ImplementationsBD
                 .Select(rec => new BuyerViewModel
                 {
                     id = rec.id,
-                    buyerFIO = rec.buyerFIO
+                    buyerFIO = rec.buyerFIO,
+                    mail=rec.mail
                 })
                 .ToList();
             return result;
@@ -36,11 +37,24 @@ namespace JewelShopService.ImplementationsBD
             Buyer element = context.Buyers.FirstOrDefault(rec => rec.id == id);
             if (element != null)
             {
+                
                 return new BuyerViewModel
                 {
                     id = element.id,
-                    buyerFIO = element.buyerFIO
+                    buyerFIO = element.buyerFIO,
+                    mail = element.mail,
+                    messages = context.MessageInfos
+                            .Where(recM => recM.buyerId == element.id)
+                            .Select(recM => new MessageInfoViewModel
+                            {
+                                MessageId = recM.MessageId,
+                                DateDelivery = recM.DateDelivery,
+                                Subject = recM.Subject,
+                                Body = recM.Body
+                            })
+                            .ToList()
                 };
+                
             }
             throw new Exception("Элемент не найден");
         }
@@ -54,7 +68,8 @@ namespace JewelShopService.ImplementationsBD
             }
             context.Buyers.Add(new Buyer
             {
-                buyerFIO = model.buyerFIO
+                buyerFIO = model.buyerFIO,
+                mail=model.mail
             });
             context.SaveChanges();
         }
@@ -73,6 +88,7 @@ namespace JewelShopService.ImplementationsBD
                 throw new Exception("Элемент не найден");
             }
             element.buyerFIO = model.buyerFIO;
+            element.mail = model.mail;
             context.SaveChanges();
         }
 

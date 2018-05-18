@@ -61,6 +61,7 @@ namespace JewelShopView
                 };
                 form.ShowDialog();
             }
+
         }
 
         private void buttonOrderIsReady_Click(object sender, EventArgs e)
@@ -194,6 +195,12 @@ namespace JewelShopView
         private void заказыПокупателейToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var form = new FormBuyerOrders();
+            form.ShowDialog();
+        }
+
+        private void письмаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new FormMails();
             form.ShowDialog();
         }
     }

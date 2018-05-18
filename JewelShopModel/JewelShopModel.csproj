@@ -60,6 +60,7 @@
     <Compile Include="Element.cs" />
     <Compile Include="Hangar.cs" />
     <Compile Include="HangarElement.cs" />
+    <Compile Include="MessageInfo.cs" />
     <Compile Include="ProdOrder.cs" />
     <Compile Include="ProdOrderStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

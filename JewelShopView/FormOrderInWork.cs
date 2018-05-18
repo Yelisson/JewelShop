@@ -37,7 +37,7 @@ namespace JewelShopView
                 Task task = Task.Run(() => APIClient.PostRequestData("api/Main/TakeOrderInWork", new ProdOrderBindingModel
                 {
                     id = id.Value,
-                    customerId = implementerId
+                    customerId = implementerId,
                 }));
 
                 task.ContinueWith((prevTask) => MessageBox.Show("Заказ передан в работу. Обновите список", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),

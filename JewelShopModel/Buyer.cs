@@ -14,6 +14,7 @@ namespace JewelShopModel
 
         [Required]
         public string buyerFIO { get; set; }
+        public string mail { get; set; }
 
         [ForeignKey("buyerId")]
         public virtual List<ProdOrder> ProdOrders { get; set; }

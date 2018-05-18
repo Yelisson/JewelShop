@@ -28,6 +28,7 @@ namespace JewelShopService
         public virtual DbSet<Hangar> Hangars { get; set; }
 
         public virtual DbSet<HangarElement> HangarElements { get; set; }
+        public virtual DbSet<MessageInfo> MessageInfos { get; set; }
 
         public override int SaveChanges()
         {
