@@ -1,4 +1,5 @@
-﻿using JewelShopService.BindingModels;
+﻿using JewelShopRestApi.Services;
+using JewelShopService.BindingModels;
 using JewelShopService.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,17 @@ namespace JewelShopRestApi.Controllers
         public IHttpActionResult GetList()
         {
             var list = _service.GetList();
+            if (list == null)
+            {
+                InternalServerError(new Exception("Нет данных"));
+            }
+            return Ok(list);
+        }
+        [HttpGet]
+        public IHttpActionResult GetInfo()
+        {
+            ReflectionService service = new ReflectionService();
+            var list = service.GetInfoByAssembly();
             if (list == null)
             {
                 InternalServerError(new Exception("Нет данных"));
