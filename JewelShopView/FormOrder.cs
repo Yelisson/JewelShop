@@ -27,20 +27,16 @@ namespace JewelShopView
                 try
                 {
                     int id = Convert.ToInt32(comboBoxAdornment.SelectedValue);
-                    var responseP = APIClient.GetRequest("api/Adornment/Get/" + id);
-                    if (responseP.Result.IsSuccessStatusCode)
-                    {
-                        AdornmentViewModel product = APIClient.GetElement<AdornmentViewModel>(responseP);
-                        int count = Convert.ToInt32(textBoxCount.Text);
-                        textBoxSum.Text = (count * (int)product.cost).ToString();
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(responseP));
-                    }
+                    AdornmentViewModel product = Task.Run(() => APIClient.GetRequestData<AdornmentViewModel>("api/Adornment/Get/" + id)).Result;
+                    int count = Convert.ToInt32(textBoxCount.Text);
+                    textBoxSum.Text = (count * (int)product.cost).ToString();
                 }
                 catch (Exception ex)
                 {
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -62,35 +58,35 @@ namespace JewelShopView
                 MessageBox.Show("Выберите изделие", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            try
+            int clientId = Convert.ToInt32(comboBoxBuyer.SelectedValue);
+            int productId = Convert.ToInt32(comboBoxAdornment.SelectedValue);
+            int count = Convert.ToInt32(textBoxCount.Text);
+            int sum = Convert.ToInt32(textBoxSum.Text);
+            Task task = Task.Run(() => APIClient.PostRequestData("api/Main/CreateOrder", new ProdOrderBindingModel
             {
-                var response = APIClient.PostRequest("api/Main/CreateOrder", new ProdOrderBindingModel
-                {
-                    buyerId = Convert.ToInt32(comboBoxBuyer.SelectedValue),
-                    adornmentId = Convert.ToInt32(comboBoxAdornment.SelectedValue),
-                    count = Convert.ToInt32(textBoxCount.Text),
-                    sum = Convert.ToInt32(textBoxSum.Text)
-                });
-                if (response.Result.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Сохранение прошло успешно", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
-            }
-            catch (Exception ex)
+                buyerId = clientId,
+                adornmentId = productId,
+                count = count,
+                sum = sum
+            }));
+
+            task.ContinueWith((prevTask) => MessageBox.Show("Сохранение прошло успешно. Обновите список", "Сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+            task.ContinueWith((prevTask) =>
             {
+                var ex = (Exception)prevTask.Exception;
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
 
@@ -109,41 +105,30 @@ namespace JewelShopView
         {
             try
             {
-                var responseC = APIClient.GetRequest("api/Buyer/GetList");
-                if (responseC.Result.IsSuccessStatusCode)
+                List<BuyerViewModel> listC = Task.Run(() => APIClient.GetRequestData<List<BuyerViewModel>>("api/Buyer/GetList")).Result;
+                if (listC != null)
                 {
-                    List<BuyerViewModel> list = APIClient.GetElement<List<BuyerViewModel>>(responseC);
-                    if (list != null)
-                    {
-                        comboBoxBuyer.DisplayMember = "buyerFIO";
-                        comboBoxBuyer.ValueMember = "id";
-                        comboBoxBuyer.DataSource = list;
-                        comboBoxBuyer.SelectedItem = null;
-                    }
+                    comboBoxBuyer.DisplayMember = "buyerFIO";
+                    comboBoxBuyer.ValueMember = "id";
+                    comboBoxBuyer.DataSource = listC;
+                    comboBoxBuyer.SelectedItem = null;
                 }
-                else
+
+                List<AdornmentViewModel> listP = Task.Run(() => APIClient.GetRequestData<List<AdornmentViewModel>>("api/Adornment/GetList")).Result;
+                if (listP != null)
                 {
-                    throw new Exception(APIClient.GetError(responseC));
-                }
-                var responseP = APIClient.GetRequest("api/Adornment/GetList");
-                if (responseP.Result.IsSuccessStatusCode)
-                {
-                    List<AdornmentViewModel> list = APIClient.GetElement<List<AdornmentViewModel>>(responseP);
-                    if (list != null)
-                    {
-                        comboBoxAdornment.DisplayMember = "adornmentName";
-                        comboBoxAdornment.ValueMember = "id";
-                        comboBoxAdornment.DataSource = list;
-                        comboBoxAdornment.SelectedItem = null;
-                    }
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(responseP));
+                    comboBoxAdornment.DisplayMember = "adornmentName";
+                    comboBoxAdornment.ValueMember = "id";
+                    comboBoxAdornment.DataSource = listP;
+                    comboBoxAdornment.SelectedItem = null;
                 }
             }
             catch (Exception ex)
             {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

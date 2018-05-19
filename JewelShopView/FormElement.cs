@@ -62,7 +62,6 @@ namespace JewelShopView
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
             Close();
         }
 
@@ -70,21 +69,17 @@ namespace JewelShopView
         {
             try
             {
-                var response = APIClient.GetRequest("api/Element/GetList");
-                if (response.Result.IsSuccessStatusCode)
-                {
-                    comboBoxComponent.DisplayMember = "elementName";
-                    comboBoxComponent.ValueMember = "id";
-                    comboBoxComponent.DataSource = APIClient.GetElement<List<ElementViewModel>>(response);
-                    comboBoxComponent.SelectedItem = null;
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
-                }
+                comboBoxComponent.DisplayMember = "elementName";
+                comboBoxComponent.ValueMember = "id";
+                comboBoxComponent.DataSource = Task.Run(() => APIClient.GetRequestData<List<ElementViewModel>>("api/Element/GetList")).Result;
+                comboBoxComponent.SelectedItem = null;
             }
             catch (Exception ex)
             {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             if (model != null)

@@ -30,35 +30,27 @@ namespace JewelShopView
         {
             try
             {
-                var response = APIClient.GetRequest("api/Element/GetList");
-                if (response.Result.IsSuccessStatusCode)
+                List<ElementViewModel> list = Task.Run(() => APIClient.GetRequestData<List<ElementViewModel>>("api/Element/GetList")).Result;
+                if (list != null)
                 {
-                    List<ElementViewModel> list = APIClient.GetElement<List<ElementViewModel>>(response);
-                    if (list != null)
-                    {
-                        dataGridViewElements.DataSource = list;
-                        dataGridViewElements.Columns[0].Visible = false;
-                        dataGridViewElements.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    }
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
+                    dataGridViewElements.DataSource = list;
+                    dataGridViewElements.Columns[0].Visible = false;
+                    dataGridViewElements.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
             catch (Exception ex)
             {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-
             var form = new FormNewElement();
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                LoadData();
-            }
+            form.ShowDialog();
         }
 
         private void buttonUpd_Click(object sender, EventArgs e)
@@ -66,12 +58,11 @@ namespace JewelShopView
 
             if (dataGridViewElements.SelectedRows.Count == 1)
             {
-                var form = new FormNewElement();
-                form.Id = Convert.ToInt32(dataGridViewElements.SelectedRows[0].Cells[0].Value);
-                if (form.ShowDialog() == DialogResult.OK)
+                var form = new FormNewElement
                 {
-                    LoadData();
-                }
+                    Id = Convert.ToInt32(dataGridViewElements.SelectedRows[0].Cells[0].Value)
+                };
+                form.ShowDialog();
             }
         }
 
@@ -82,19 +73,21 @@ namespace JewelShopView
                 if (MessageBox.Show("Удалить запись", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     int id = Convert.ToInt32(dataGridViewElements.SelectedRows[0].Cells[0].Value);
-                    try
+
+                    Task task = Task.Run(() => APIClient.PostRequestData("api/Element/DelElement", new BuyerBindingModel { id = id }));
+
+                    task.ContinueWith((prevTask) => MessageBox.Show("Запись удалена. Обновите список", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                    task.ContinueWith((prevTask) =>
                     {
-                        var response = APIClient.PostRequest("api/Element/DelElement", new BuyerBindingModel { id = id });
-                        if (!response.Result.IsSuccessStatusCode)
+                        var ex = (Exception)prevTask.Exception;
+                        while (ex.InnerException != null)
                         {
-                            throw new Exception(APIClient.GetError(response));
+                            ex = ex.InnerException;
                         }
-                    }
-                    catch (Exception ex)
-                    {
                         MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    LoadData();
+                    }, TaskContinuationOptions.OnlyOnFaulted);
                 }
             }
         }

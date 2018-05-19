@@ -24,27 +24,23 @@ namespace JewelShopView
         {
             try
             {
-                var response = APIClient.GetRequest("api/Main/GetList");
-                if (response.Result.IsSuccessStatusCode)
+                List<ProdOrderViewModel> list = Task.Run(() => APIClient.GetRequestData<List<ProdOrderViewModel>>("api/Main/GetList")).Result;
+                if (list != null)
                 {
-                    List<ProdOrderViewModel> list = APIClient.GetElement<List<ProdOrderViewModel>>(response);
-                    if (list != null)
-                    {
-                        dataGridViewOrders.DataSource = list;
-                        dataGridViewOrders.Columns[0].Visible = false;
-                        dataGridViewOrders.Columns[1].Visible = false;
-                        dataGridViewOrders.Columns[3].Visible = false;
-                        dataGridViewOrders.Columns[5].Visible = false;
-                        dataGridViewOrders.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    }
-                }
-                else
-                {
-                    throw new Exception(APIClient.GetError(response));
+                    dataGridViewOrders.DataSource = list;
+                    dataGridViewOrders.Columns[0].Visible = false;
+                    dataGridViewOrders.Columns[1].Visible = false;
+                    dataGridViewOrders.Columns[3].Visible = false;
+                    dataGridViewOrders.Columns[5].Visible = false;
+                    dataGridViewOrders.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 }
             }
             catch (Exception ex)
             {
+                while (ex.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                }
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -53,7 +49,6 @@ namespace JewelShopView
         {
             var form = new FormOrder();
             form.ShowDialog();
-            LoadData();
         }
 
         private void buttonGiveOrderInWork_Click(object sender, EventArgs e)
@@ -65,7 +60,6 @@ namespace JewelShopView
                     Id = Convert.ToInt32(dataGridViewOrders.SelectedRows[0].Cells[0].Value)
                 };
                 form.ShowDialog();
-                LoadData();
             }
         }
 
@@ -74,25 +68,24 @@ namespace JewelShopView
             if (dataGridViewOrders.SelectedRows.Count == 1)
             {
                 int id = Convert.ToInt32(dataGridViewOrders.SelectedRows[0].Cells[0].Value);
-                try
+
+                Task task = Task.Run(() => APIClient.PostRequestData("api/Main/FinishOrder", new ProdOrderBindingModel
                 {
-                    var response = APIClient.PostRequest("api/Main/FinishOrder", new ProdOrderBindingModel
-                    {
-                        id = id
-                    });
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        LoadData();
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
-                }
-                catch (Exception ex)
+                    id = id
+                }));
+
+                task.ContinueWith((prevTask) => MessageBox.Show("Статус заказа изменен. Обновите список", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                task.ContinueWith((prevTask) =>
                 {
+                    var ex = (Exception)prevTask.Exception;
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                }, TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -101,25 +94,24 @@ namespace JewelShopView
             if (dataGridViewOrders.SelectedRows.Count == 1)
             {
                 int id = Convert.ToInt32(dataGridViewOrders.SelectedRows[0].Cells[0].Value);
-                try
+
+                Task task = Task.Run(() => APIClient.PostRequestData("api/Main/PayOrder", new ProdOrderBindingModel
                 {
-                    var response = APIClient.PostRequest("api/Main/PayOrder", new ProdOrderBindingModel
-                    {
-                        id = id
-                    });
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        LoadData();
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
-                }
-                catch (Exception ex)
+                    id = id
+                }));
+
+                task.ContinueWith((prevTask) => MessageBox.Show("Статус заказа изменен. Обновите список", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                task.ContinueWith((prevTask) =>
                 {
+                    var ex = (Exception)prevTask.Exception;
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                }, TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -172,25 +164,24 @@ namespace JewelShopView
             };
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                try
+                string fileName = sfd.FileName;
+                Task task = Task.Run(() => APIClient.PostRequestData("api/Report/SaveAdornmentPrice", new ReportBindingModel
                 {
-                    var response = APIClient.PostRequest("api/Report/SaveAdornmentPrice", new ReportBindingModel
-                    {
-                        fileName = sfd.FileName
-                    });
-                    if (response.Result.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        throw new Exception(APIClient.GetError(response));
-                    }
-                }
-                catch (Exception ex)
+                    fileName = fileName
+                }));
+
+                task.ContinueWith((prevTask) => MessageBox.Show("Выполнено", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information),
+                TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                task.ContinueWith((prevTask) =>
                 {
+                    var ex = (Exception)prevTask.Exception;
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                    }
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                }, TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
