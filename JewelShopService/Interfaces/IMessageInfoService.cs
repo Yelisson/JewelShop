@@ -1,4 +1,5 @@
-﻿using JewelShopService.BindingModels;
+﻿using JewelShopService.Attributies;
+using JewelShopService.BindingModels;
 using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.Interfaces
 {
-   public interface IMessageInfoService
+    [BuyerInterface("Интерфейс для работы с письмами")]
+    public interface IMessageInfoService
     {
+        [BuyerMethod("Метод получения списка писем")]
         List<MessageInfoViewModel> GetList();
-
+        [BuyerMethod("Метод получения письма по id")]
         MessageInfoViewModel GetElement(int id);
-
+        [BuyerMethod("Метод добавления письма")]
         void AddElement(MessageInfoBindingModel model);
     }
 }

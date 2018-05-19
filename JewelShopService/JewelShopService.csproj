@@ -68,6 +68,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractDataBaseContext.cs" />
+    <Compile Include="Attributies\BuyerInterfaceAttribute.cs" />
+    <Compile Include="Attributies\BuyerMethodAttribute.cs" />
     <Compile Include="BindingModels\AdornmentBindingModel.cs" />
     <Compile Include="BindingModels\AdornmentElementBindingModel.cs" />
     <Compile Include="BindingModels\BuyerBindingModel.cs" />
