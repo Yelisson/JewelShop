@@ -8,12 +8,16 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.Interfaces
 {
-   public interface IElementService
+    public interface IElementService
     {
         List<ElementViewModel> GetList();
+
         ElementViewModel GetElement(int id);
+
         void AddElement(ElementBindingModel model);
+
         void UpdElement(ElementBindingModel model);
+
         void DelElement(int id);
     }
 }

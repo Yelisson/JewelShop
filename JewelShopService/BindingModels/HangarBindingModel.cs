@@ -9,6 +9,7 @@ namespace JewelShopService.BindingModels
     public class HangarBindingModel
     {
         public int id { get; set; }
+
         public string hangarName { get; set; }
     }
 }

@@ -10,15 +10,13 @@ namespace JewelShopModel
 {
     public class Element
     {
-        public int id { set; get; }
-
+        public int id { get; set; }
         [Required]
         public string elementName { get; set; }
-
         [ForeignKey("elementId")]
         public virtual List<AdornmentElement> AdornmentElements { get; set; }
 
-        [ForeignKey("elementtId")]
+        [ForeignKey("elementId")]
         public virtual List<HangarElement> HangarElements { get; set; }
     }
 }

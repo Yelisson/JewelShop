@@ -1,4 +1,4 @@
-namespace JewelShopService.Migrations
+namespace PlumbingRepairService.Migrations
 {
     using System;
     using System.Data.Entity;

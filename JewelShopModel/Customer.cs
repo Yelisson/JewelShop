@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 
 namespace JewelShopModel
 {
-   public  class Customer
+    public class Customer
     {
         public int id { get; set; }
-
         [Required]
-        public string customerFIO { get; set; }
-
+        public string customerName { get; set; }
         [ForeignKey("customerId")]
-        public virtual List<ProdOrder> ProdOrders { get; set; }
+        public virtual List<ProdOrder> Orders { get; set; }
     }
 }

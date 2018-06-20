@@ -14,7 +14,6 @@ namespace JewelShopModel
 
         [Required]
         public string hangarName { get; set; }
-
         [ForeignKey("hangarId")]
         public virtual List<HangarElement> HangarElements { get; set; }
     }
