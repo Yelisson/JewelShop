@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using JewelShopModel;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
 using JewelShopService.Interfaces;
 using JewelShopService.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace JewelShopService.ImplementationsList
 {
-   public  class HangarServiceList: IHangarService
+    public class HangarServiceList : IHangarService
     {
         private DataListSingleton source;
 
@@ -21,62 +21,98 @@ namespace JewelShopService.ImplementationsList
 
         public List<HangarViewModel> GetList()
         {
-            List<HangarViewModel> result = source.Hangars
-                .Select(rec => new HangarViewModel
+            List<HangarViewModel> result = new List<HangarViewModel>();
+            for (int i = 0; i < source.Hangars.Count; ++i)
+            {
+                List<HangarElementViewModel> StockComponents = new List<HangarElementViewModel>();
+                for (int j = 0; j < source.HangarElements.Count; ++j)
                 {
-                    id = rec.id,
-                    hangarName = rec.hangarName,
-                    HangarElement = source.HangarElements
-                            .Where(recPC => recPC.hangarId == rec.id)
-                            .Select(recPC => new HangarElementViewModel
+                    if (source.HangarElements[j].hangarId == source.Hangars[i].id)
+                    {
+                        string componentName = string.Empty;
+                        for (int k = 0; k < source.Elements.Count; ++k)
+                        {
+                            if (source.AdornmentElements[j].elementId == source.Elements[k].id)
                             {
-                                id = recPC.id,
-                                hangarId = recPC.hangarId,
-                                elementId = recPC.elementtId,
-                                elementName = source.Elements
-                                    .FirstOrDefault(recC => recC.id == recPC.elementtId)?.elementName,
-                                Count = recPC.count
-                            })
-                            .ToList()
-                })
-                .ToList();
+                                componentName = source.Elements[k].elementName;
+                                break;
+                            }
+                        }
+                        StockComponents.Add(new HangarElementViewModel
+                        {
+                            id = source.HangarElements[j].id,
+                            hangarId = source.HangarElements[j].hangarId,
+                            elementId = source.HangarElements[j].elementId,
+                            elementName = componentName,
+                            count = source.HangarElements[j].count
+                        });
+                    }
+                }
+                result.Add(new HangarViewModel
+                {
+                    id = source.Hangars[i].id,
+                    hangarName = source.Hangars[i].hangarName,
+                    HangarElements = StockComponents
+                });
+            }
             return result;
         }
 
         public HangarViewModel GetElement(int id)
         {
-            Hangar element = source.Hangars.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.Hangars.Count; ++i)
             {
-                return new HangarViewModel
+                List<HangarElementViewModel> StockComponents = new List<HangarElementViewModel>();
+                for (int j = 0; j < source.HangarElements.Count; ++j)
                 {
-                    id = element.id,
-                    hangarName = element.hangarName,
-                    HangarElement = source.HangarElements
-                            .Where(recPC => recPC.hangarId == element.id)
-                            .Select(recPC => new HangarElementViewModel
+                    if (source.HangarElements[j].hangarId == source.Hangars[i].id)
+                    {
+                        string componentName = string.Empty;
+                        for (int k = 0; k < source.Elements.Count; ++k)
+                        {
+                            if (source.AdornmentElements[j].elementId == source.Elements[k].id)
                             {
-                                id = recPC.id,
-                                hangarId = recPC.hangarId,
-                                elementId = recPC.elementtId,
-                                elementName = source.Elements
-                                    .FirstOrDefault(recC => recC.id == recPC.elementtId)?.elementName,
-                                Count = recPC.count
-                            })
-                            .ToList()
-                };
+                                componentName = source.Elements[k].elementName;
+                                break;
+                            }
+                        }
+                        StockComponents.Add(new HangarElementViewModel
+                        {
+                            id = source.HangarElements[j].id,
+                            hangarId = source.HangarElements[j].hangarId,
+                            elementId = source.HangarElements[j].elementId,
+                            elementName = componentName,
+                            count = source.HangarElements[j].count
+                        });
+                    }
+                }
+                if (source.Hangars[i].id == id)
+                {
+                    return new HangarViewModel
+                    {
+                        id = source.Hangars[i].id,
+                        hangarName = source.Hangars[i].hangarName,
+                        HangarElements = StockComponents
+                    };
+                }
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(HangarBindingModel model)
         {
-            Hangar element = source.Hangars.FirstOrDefault(rec => rec.hangarName == model.hangarName);
-            if (element != null)
+            int maxId = 0;
+            for (int i = 0; i < source.Hangars.Count; ++i)
             {
-                throw new Exception("Уже есть склад с таким названием");
+                if (source.Hangars[i].id > maxId)
+                {
+                    maxId = source.Hangars[i].id;
+                }
+                if (source.Hangars[i].hangarName == model.hangarName)
+                {
+                    throw new Exception("Уже есть склад с таким названием");
+                }
             }
-            int maxId = source.Hangars.Count > 0 ? source.Hangars.Max(rec => rec.id) : 0;
             source.Hangars.Add(new Hangar
             {
                 id = maxId + 1,
@@ -86,32 +122,44 @@ namespace JewelShopService.ImplementationsList
 
         public void UpdElement(HangarBindingModel model)
         {
-            Hangar element = source.Hangars.FirstOrDefault(rec =>
-                                        rec.hangarName == model.hangarName && rec.id != model.id);
-            if (element != null)
+            int index = -1;
+            for (int i = 0; i < source.Hangars.Count; ++i)
             {
-                throw new Exception("Уже есть склад с таким названием");
+                if (source.Hangars[i].id == model.id)
+                {
+                    index = i;
+                }
+                if (source.Hangars[i].hangarName == model.hangarName &&
+                    source.Hangars[i].id != model.id)
+                {
+                    throw new Exception("Уже есть склад с таким названием");
+                }
             }
-            element = source.Hangars.FirstOrDefault(rec => rec.id == model.id);
-            if (element == null)
+            if (index == -1)
             {
                 throw new Exception("Элемент не найден");
             }
-            element.hangarName = model.hangarName;
+            source.Hangars[index].hangarName = model.hangarName;
         }
 
         public void DelElement(int id)
         {
-            Hangar element = source.Hangars.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.HangarElements.Count; ++i)
             {
-                source.HangarElements.RemoveAll(rec => rec.hangarId == id);
-                source.Hangars.Remove(element);
+                if (source.HangarElements[i].hangarId == id)
+                {
+                    source.HangarElements.RemoveAt(i--);
+                }
             }
-            else
+            for (int i = 0; i < source.Hangars.Count; ++i)
             {
-                throw new Exception("Элемент не найден");
+                if (source.Hangars[i].id == id)
+                {
+                    source.Hangars.RemoveAt(i);
+                    return;
+                }
             }
+            throw new Exception("Элемент не найден");
         }
     }
 }
