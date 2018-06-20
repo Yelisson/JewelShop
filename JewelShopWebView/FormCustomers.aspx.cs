@@ -7,12 +7,13 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Unity;
 
 namespace JewelShopWebView
 {
     public partial class FormCustomers : System.Web.UI.Page
     {
-        private readonly ICustomerService service = new CustomerServiceList();
+        private ICustomerService service = UnityConfig.Container.Resolve<ICustomerService>();
 
         List<CustomerViewModel> list;
 
@@ -26,7 +27,6 @@ namespace JewelShopWebView
             try
             {
                 list = service.GetList();
-                dataGridView.Columns[0].Visible = false;
             }
             catch (Exception ex)
             {
@@ -36,7 +36,6 @@ namespace JewelShopWebView
 
         protected void ButtonAdd_Click(object sender, EventArgs e)
         {
-            //Server.Transfer("FormPerformer.aspx");
             Server.Transfer("FormCustomer.aspx");
         }
 

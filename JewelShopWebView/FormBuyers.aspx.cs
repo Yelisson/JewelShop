@@ -14,12 +14,13 @@ namespace JewelShopWebView
 {
     public partial class FormBuyers : System.Web.UI.Page
     {
-        private readonly IBuyerService service = new BuyerServiceList();
+        private IBuyerService service = UnityConfig.Container.Resolve<IBuyerService>();
 
         List<BuyerViewModel> list;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            service = UnityConfig.Container.Resolve<IBuyerService>();
             LoadData();
         }
 
@@ -28,7 +29,6 @@ namespace JewelShopWebView
             try
             {
                 list = service.GetList();
-                dataGridView.Columns[0].Visible = false;
             }
             catch (Exception ex)
             {
