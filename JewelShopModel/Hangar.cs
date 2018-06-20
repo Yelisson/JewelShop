@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JewelShop
+namespace JewelShopModel
 {
-    public class Class1
+    public class Hangar
     {
+        public int id { get; set; }
+
+        public string hangarName { get; set; }
     }
 }

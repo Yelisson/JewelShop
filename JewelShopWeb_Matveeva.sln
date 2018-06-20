@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JewelShopModel", "JewelShopModel\JewelShopModel.csproj", "{80DF828E-7385-4901-8FF4-950C983D881E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JewelShopService", "JewelShopService\JewelShopService.csproj", "{837526D2-DA4C-4E85-965C-FB885768967B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JewelShopView", "JewelShopView\JewelShopView.csproj", "{5BDE5330-70B8-4E0B-B2C6-2D8962720092}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{80DF828E-7385-4901-8FF4-950C983D881E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80DF828E-7385-4901-8FF4-950C983D881E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80DF828E-7385-4901-8FF4-950C983D881E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80DF828E-7385-4901-8FF4-950C983D881E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{837526D2-DA4C-4E85-965C-FB885768967B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{837526D2-DA4C-4E85-965C-FB885768967B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{837526D2-DA4C-4E85-965C-FB885768967B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{837526D2-DA4C-4E85-965C-FB885768967B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BDE5330-70B8-4E0B-B2C6-2D8962720092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BDE5330-70B8-4E0B-B2C6-2D8962720092}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BDE5330-70B8-4E0B-B2C6-2D8962720092}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BDE5330-70B8-4E0B-B2C6-2D8962720092}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
