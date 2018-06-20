@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace JewelShopModel
+{
+    public enum ProdOrderStatus
+    {
+        Принят = 0,
+        Выполняетя = 1,
+        Готов = 2,
+        Оплачен = 3
+    }
+}
