@@ -1,16 +1,16 @@
-﻿using JewelShopService.Interfaces;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
+using JewelShopService.Interfaces;
 using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JewelShopModel;
 
 namespace JewelShopService.ImplementationsList
 {
-    public class ElementServiceList:IElementService
+    public class ElementServiceList : IElementService
     {
         private DataListSingleton source;
 
@@ -21,38 +21,48 @@ namespace JewelShopService.ImplementationsList
 
         public List<ElementViewModel> GetList()
         {
-            List<ElementViewModel> result = source.Elements
-               .Select(rec => new ElementViewModel
-               {
-                   id = rec.id,
-                   elementName = rec.elementName
-               })
-               .ToList();
+            List<ElementViewModel> result = new List<ElementViewModel>();
+            for (int i = 0; i < source.Elements.Count; ++i)
+            {
+                result.Add(new ElementViewModel
+                {
+                    id = source.Elements[i].id,
+                    elementName = source.Elements[i].elementName
+                });
+            }
             return result;
         }
 
         public ElementViewModel GetElement(int id)
         {
-            Element element = source.Elements.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.Elements.Count; ++i)
             {
-                return new ElementViewModel
+                if (source.Elements[i].id == id)
                 {
-                    id = element.id,
-                    elementName = element.elementName
-                };
+                    return new ElementViewModel
+                    {
+                        id = source.Elements[i].id,
+                        elementName = source.Elements[i].elementName
+                    };
+                }
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(ElementBindingModel model)
         {
-            Element element = source.Elements.FirstOrDefault(rec => rec.elementName == model.elementName);
-            if (element != null)
+            int maxId = 0;
+            for (int i = 0; i < source.Elements.Count; ++i)
             {
-                throw new Exception("Уже есть компонент с таким названием");
+                if (source.Elements[i].id > maxId)
+                {
+                    maxId = source.Elements[i].id;
+                }
+                if (source.Elements[i].elementName == model.elementName)
+                {
+                    throw new Exception("Уже есть компонент с таким названием");
+                }
             }
-            int maxId = source.Elements.Count > 0 ? source.Elements.Max(rec => rec.id) : 0;
             source.Elements.Add(new Element
             {
                 id = maxId + 1,
@@ -62,31 +72,37 @@ namespace JewelShopService.ImplementationsList
 
         public void UpdElement(ElementBindingModel model)
         {
-            Element element = source.Elements.FirstOrDefault(rec =>
-                                        rec.elementName == model.elementName && rec.id != model.id);
-            if (element != null)
+            int index = -1;
+            for (int i = 0; i < source.Elements.Count; ++i)
             {
-                throw new Exception("Уже есть компонент с таким названием");
+                if (source.Elements[i].id == model.id)
+                {
+                    index = i;
+                }
+                if (source.Elements[i].elementName == model.elementName &&
+                    source.Elements[i].id != model.id)
+                {
+                    throw new Exception("Уже есть компонент с таким названием");
+                }
             }
-            element = source.Elements.FirstOrDefault(rec => rec.id == model.id);
-            if (element == null)
+            if (index == -1)
             {
                 throw new Exception("Элемент не найден");
             }
-            element.elementName = model.elementName;
+            source.Elements[index].elementName = model.elementName;
         }
 
         public void DelElement(int id)
         {
-            Element element = source.Elements.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.Elements.Count; ++i)
             {
-                source.Elements.Remove(element);
+                if (source.Elements[i].id == id)
+                {
+                    source.Elements.RemoveAt(i);
+                    return;
+                }
             }
-            else
-            {
-                throw new Exception("Элемент не найден");
-            }
+            throw new Exception("Элемент не найден");
         }
     }
 }

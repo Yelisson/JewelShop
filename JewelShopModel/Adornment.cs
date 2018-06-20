@@ -11,15 +11,12 @@ namespace JewelShopModel
     public class Adornment
     {
         public int id { get; set; }
-
         [Required]
         public string adornmentName { get; set; }
-
         [Required]
         public decimal price { get; set; }
-
         [ForeignKey("adornmentId")]
-        public virtual List<ProdOrder> ProdOrders { get; set; }
+        public virtual List<ProdOrder> Orders { get; set; }
 
         [ForeignKey("adornmentId")]
         public virtual List<AdornmentElement> AdornmentElements { get; set; }

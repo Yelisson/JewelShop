@@ -9,8 +9,11 @@ namespace JewelShopService.BindingModels
     public class AdornmentBindingModel
     {
         public int id { get; set; }
+
         public string adornmentName { get; set; }
+
         public decimal cost { get; set; }
-        public List<AdornmentElementBindingModel> AdornmentComponent { get; set; }
+
+        public List<AdornmentElementBindingModel> AdornmentComponents { get; set; }
     }
 }

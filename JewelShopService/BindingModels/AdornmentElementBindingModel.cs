@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.BindingModels
 {
-   public class AdornmentElementBindingModel
+    public class AdornmentElementBindingModel
     {
         public int id { get; set; }
-        public int adornmentId { set; get; }
+
+        public int adornmentId { get; set; }
+
         public int elementId { get; set; }
+
         public int count { get; set; }
     }
 }

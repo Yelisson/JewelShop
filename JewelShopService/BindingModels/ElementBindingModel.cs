@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.BindingModels
 {
-   public  class ElementBindingModel
+    public class ElementBindingModel
     {
-        public int id { set; get; }
+        public int id { get; set; }
+
         public string elementName { get; set; }
     }
 }

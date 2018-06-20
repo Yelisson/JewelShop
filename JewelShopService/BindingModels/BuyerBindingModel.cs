@@ -9,6 +9,7 @@ namespace JewelShopService.BindingModels
     public class BuyerBindingModel
     {
         public int id { get; set; }
-        public string buyerFIO { get; set; }
+
+        public string buyerName { get; set; }
     }
 }

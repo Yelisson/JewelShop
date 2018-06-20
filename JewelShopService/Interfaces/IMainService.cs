@@ -11,10 +11,15 @@ namespace JewelShopService.Interfaces
     public interface IMainService
     {
         List<ProdOrderViewModel> GetList();
+
         void CreateOrder(ProdOrderBindingModel model);
+
         void TakeOrderInWork(ProdOrderBindingModel model);
+
         void FinishOrder(int id);
+
         void PayOrder(int id);
+
         void PutComponentOnStock(HangarElementBindingModel model);
     }
 }

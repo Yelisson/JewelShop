@@ -1,18 +1,19 @@
-﻿using JewelShopService.Interfaces;
-using JewelShopService.ViewModels;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
+using JewelShopService.Interfaces;
+using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JewelShopModel;
 
 namespace JewelShopService.ImplementationsList
 {
     public class BuyerServiceList : IBuyerService
     {
         private DataListSingleton source;
+
         public BuyerServiceList()
         {
             source = DataListSingleton.GetInstance();
@@ -20,73 +21,88 @@ namespace JewelShopService.ImplementationsList
 
         public List<BuyerViewModel> GetList()
         {
-            List<BuyerViewModel> result = source.Buyers
-              .Select(rec => new BuyerViewModel
-              {
-                  id = rec.id,
-                  buyerFIO = rec.buyerFIO
-              })
-              .ToList();
+            List<BuyerViewModel> result = new List<BuyerViewModel>();
+            for (int i = 0; i < source.Buyers.Count; ++i)
+            {
+                result.Add(new BuyerViewModel
+                {
+                    id = source.Buyers[i].id,
+                    buyerName = source.Buyers[i].buyerName
+                });
+            }
             return result;
         }
 
         public BuyerViewModel GetElement(int id)
         {
-            Buyer element = source.Buyers.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.Buyers.Count; ++i)
             {
-                return new BuyerViewModel
+                if (source.Buyers[i].id == id)
                 {
-                    id = element.id,
-                    buyerFIO = element.buyerFIO
-                };
+                    return new BuyerViewModel
+                    {
+                        id = source.Buyers[i].id,
+                        buyerName = source.Buyers[i].buyerName
+                    };
+                }
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(BuyerBindingModel model)
         {
-            Buyer element = source.Buyers.FirstOrDefault(rec => rec.buyerFIO == model.buyerFIO);
-            if (element != null)
+            int maxId = 0;
+            for (int i = 0; i < source.Buyers.Count; ++i)
             {
-                throw new Exception("Уже есть клиент с таким ФИО");
+                if (source.Buyers[i].id > maxId)
+                {
+                    maxId = source.Buyers[i].id;
+                }
+                if (source.Buyers[i].buyerName == model.buyerName)
+                {
+                    throw new Exception("Уже есть клиент с таким ФИО");
+                }
             }
-            int maxId = source.Buyers.Count > 0 ? source.Buyers.Max(rec => rec.id) : 0;
             source.Buyers.Add(new Buyer
             {
                 id = maxId + 1,
-                buyerFIO = model.buyerFIO
+                buyerName = model.buyerName
             });
         }
 
-
         public void UpdElement(BuyerBindingModel model)
         {
-            Buyer element = source.Buyers.FirstOrDefault(rec =>
-                                   rec.buyerFIO == model.buyerFIO && rec.id != model.id);
-            if (element != null)
+            int index = -1;
+            for (int i = 0; i < source.Buyers.Count; ++i)
             {
-                throw new Exception("Уже есть клиент с таким ФИО");
+                if (source.Buyers[i].id == model.id)
+                {
+                    index = i;
+                }
+                if (source.Buyers[i].buyerName == model.buyerName &&
+                    source.Buyers[i].id != model.id)
+                {
+                    throw new Exception("Уже есть клиент с таким ФИО");
+                }
             }
-            element = source.Buyers.FirstOrDefault(rec => rec.id == model.id);
-            if (element == null)
+            if (index == -1)
             {
                 throw new Exception("Элемент не найден");
             }
-            element.buyerFIO = model.buyerFIO;
+            source.Buyers[index].buyerName = model.buyerName;
         }
 
         public void DelElement(int id)
         {
-            Buyer element = source.Buyers.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.Buyers.Count; ++i)
             {
-                source.Buyers.Remove(element);
+                if (source.Buyers[i].id == id)
+                {
+                    source.Buyers.RemoveAt(i);
+                    return;
+                }
             }
-            else
-            {
-                throw new Exception("Элемент не найден");
-            }
+            throw new Exception("Элемент не найден");
         }
     }
 }
