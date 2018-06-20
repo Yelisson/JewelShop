@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.ViewModels
 {
-  public  class CustomerViewModel
+    public class CustomerViewModel
     {
         public int id { get; set; }
-        public string customerFIO { get; set; }
+
+        public string customerName { get; set; }
     }
 }

@@ -1,7 +1,7 @@
-﻿using JewelShopService.Interfaces;
-using JewelShopService.ViewModels;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
-using JewelShopModel;
+using JewelShopService.Interfaces;
+using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.ImplementationsList
 {
-    public class CustomerServiceList:ICustomerService
+    public class CustomerServiceList : ICustomerService
     {
-
         private DataListSingleton source;
 
         public CustomerServiceList()
@@ -22,72 +21,88 @@ namespace JewelShopService.ImplementationsList
 
         public List<CustomerViewModel> GetList()
         {
-            List<CustomerViewModel> result = source.Customers
-                 .Select(rec => new CustomerViewModel
-                 {
-                     id = rec.id,
-                     customerFIO = rec.customerFIO
-                 })
-                 .ToList();
+            List<CustomerViewModel> result = new List<CustomerViewModel>();
+            for (int i = 0; i < source.Customers.Count; ++i)
+            {
+                result.Add(new CustomerViewModel
+                {
+                    id = source.Customers[i].id,
+                    customerName = source.Customers[i].customerName
+                });
+            }
             return result;
         }
 
         public CustomerViewModel GetElement(int id)
         {
-            Customer element = source.Customers.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.Customers.Count; ++i)
             {
-                return new CustomerViewModel
+                if (source.Customers[i].id == id)
                 {
-                    id = element.id,
-                    customerFIO = element.customerFIO
-                };
+                    return new CustomerViewModel
+                    {
+                        id = source.Customers[i].id,
+                        customerName = source.Customers[i].customerName
+                    };
+                }
             }
             throw new Exception("Элемент не найден");
         }
 
         public void AddElement(CustomerBindingModel model)
         {
-            Customer element = source.Customers.FirstOrDefault(rec => rec.customerFIO == model.customerFIO);
-            if (element != null)
+            int maxId = 0;
+            for (int i = 0; i < source.Customers.Count; ++i)
             {
-                throw new Exception("Уже есть сотрудник с таким ФИО");
+                if (source.Customers[i].id > maxId)
+                {
+                    maxId = source.Customers[i].id;
+                }
+                if (source.Customers[i].customerName == model.customerName)
+                {
+                    throw new Exception("Уже есть сотрудник с таким ФИО");
+                }
             }
-            int maxId = source.Customers.Count > 0 ? source.Customers.Max(rec => rec.id) : 0;
             source.Customers.Add(new Customer
             {
                 id = maxId + 1,
-                customerFIO = model.customerFIO
+                customerName = model.customerName
             });
         }
 
         public void UpdElement(CustomerBindingModel model)
         {
-            Customer element = source.Customers.FirstOrDefault(rec =>
-                                     rec.customerFIO == model.customerFIO && rec.id != model.id);
-            if (element != null)
+            int index = -1;
+            for (int i = 0; i < source.Customers.Count; ++i)
             {
-                throw new Exception("Уже есть сотрудник с таким ФИО");
+                if (source.Customers[i].id == model.id)
+                {
+                    index = i;
+                }
+                if (source.Customers[i].customerName == model.customerName &&
+                    source.Customers[i].id != model.id)
+                {
+                    throw new Exception("Уже есть сотрудник с таким ФИО");
+                }
             }
-            element = source.Customers.FirstOrDefault(rec => rec.id == model.id);
-            if (element == null)
+            if (index == -1)
             {
                 throw new Exception("Элемент не найден");
             }
-            element.customerFIO = model.customerFIO;
+            source.Customers[index].customerName = model.customerName;
         }
 
         public void DelElement(int id)
         {
-            Customer element = source.Customers.FirstOrDefault(rec => rec.id == id);
-            if (element != null)
+            for (int i = 0; i < source.Customers.Count; ++i)
             {
-                source.Customers.Remove(element);
+                if (source.Customers[i].id == id)
+                {
+                    source.Customers.RemoveAt(i);
+                    return;
+                }
             }
-            else
-            {
-                throw new Exception("Элемент не найден");
-            }
+            throw new Exception("Элемент не найден");
         }
     }
 }

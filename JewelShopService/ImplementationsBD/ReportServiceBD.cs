@@ -19,6 +19,10 @@ namespace JewelShopService.ImplementationsBD
     public class ReportServiceBD : IReportService
     {
         private AbstractDataBaseContext context;
+        public ReportServiceBD()
+        {
+            context = new AbstractDataBaseContext();
+        }
 
         public ReportServiceBD(AbstractDataBaseContext context)
         {
@@ -156,7 +160,6 @@ namespace JewelShopService.ImplementationsBD
                 excelworksheet.PageSetup.CenterHorizontally = true;
                 excelworksheet.PageSetup.CenterVertically = true;
                 Microsoft.Office.Interop.Excel.Range excelcells = excelworksheet.get_Range("A1", "C1");
-
                 excelcells.Merge(Type.Missing);
                 excelcells.Font.Bold = true;
                 excelcells.Value2 = "Загруженность складов";
@@ -227,129 +230,5 @@ namespace JewelShopService.ImplementationsBD
             }
         }
 
-        public List<BuyerOrdersModel> GetBuyerOrders(ReportBindingModel model)
-        {
-            return context.ProdOrders
-                            .Include(rec => rec.Buyer)
-                            .Include(rec => rec.Adornment)
-                            .Where(rec => rec.DateCreate >= model.dateFrom && rec.DateCreate <= model.dateTo)
-                            .Select(rec => new BuyerOrdersModel
-                            {
-                                buyerName = rec.Buyer.buyerFIO,
-                                dateCustom = SqlFunctions.DateName("dd", rec.DateCreate) + " " +
-                                            SqlFunctions.DateName("mm", rec.DateCreate) + " " +
-                                            SqlFunctions.DateName("yyyy", rec.DateCreate),
-                                adornmentName = rec.Adornment.adornmentName,
-                                count = rec.count,
-                                sum = rec.sum,
-                                status = rec.status.ToString()
-                            })
-                            .ToList();
-        }
-
-        public void SaveBuyerOrders(ReportBindingModel model)
-        {
-            if (!File.Exists("TIFCYR.TTF"))
-            {
-                File.WriteAllBytes("TIFCYR.TTF", Properties.Resources.TIFCYR);
-            }
-            FileStream fs = new FileStream(model.fileName, FileMode.OpenOrCreate, FileAccess.Write);
-            iTextSharp.text.Document doc = new iTextSharp.text.Document();
-            doc.SetMargins(0.5f, 0.5f, 0.5f, 0.5f);
-            PdfWriter writer = PdfWriter.GetInstance(doc, fs);
-
-            doc.Open();
-            BaseFont baseFont = BaseFont.CreateFont("TIFCYR.TTF", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-
-            var phraseTitle = new Phrase("Заказы клиентов",
-                new iTextSharp.text.Font(baseFont, 16, iTextSharp.text.Font.BOLD));
-            iTextSharp.text.Paragraph paragraph = new iTextSharp.text.Paragraph(phraseTitle)
-            {
-                Alignment = Element.ALIGN_CENTER,
-                SpacingAfter = 12
-            };
-            doc.Add(paragraph);
-
-            var phrasePeriod = new Phrase("c " + model.dateFrom.Value.ToShortDateString() +
-                                    " по " + model.dateTo.Value.ToShortDateString(),
-                                    new iTextSharp.text.Font(baseFont, 14, iTextSharp.text.Font.BOLD));
-            paragraph = new iTextSharp.text.Paragraph(phrasePeriod)
-            {
-                Alignment = Element.ALIGN_CENTER,
-                SpacingAfter = 12
-            };
-            doc.Add(paragraph);
-            PdfPTable table = new PdfPTable(6)
-            {
-                TotalWidth = 800F
-            };
-            table.SetTotalWidth(new float[] { 160, 140, 160, 100, 100, 140 });
-            PdfPCell cell = new PdfPCell();
-            var fontForCellBold = new iTextSharp.text.Font(baseFont, 10, iTextSharp.text.Font.BOLD);
-            table.AddCell(new PdfPCell(new Phrase("ФИО клиента", fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_CENTER
-            });
-            table.AddCell(new PdfPCell(new Phrase("Дата создания", fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_CENTER
-            });
-            table.AddCell(new PdfPCell(new Phrase("Изделие", fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_CENTER
-            });
-            table.AddCell(new PdfPCell(new Phrase("Количество", fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_CENTER
-            });
-            table.AddCell(new PdfPCell(new Phrase("Сумма", fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_CENTER
-            });
-            table.AddCell(new PdfPCell(new Phrase("Статус", fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_CENTER
-            });
-            var list = GetBuyerOrders(model);
-            var fontForCells = new iTextSharp.text.Font(baseFont, 10);
-            for (int i = 0; i < list.Count; i++)
-            {
-                cell = new PdfPCell(new Phrase(list[i].buyerName, fontForCells));
-                table.AddCell(cell);
-                cell = new PdfPCell(new Phrase(list[i].dateCustom, fontForCells));
-                table.AddCell(cell);
-                cell = new PdfPCell(new Phrase(list[i].adornmentName, fontForCells));
-                table.AddCell(cell);
-                cell = new PdfPCell(new Phrase(list[i].count.ToString(), fontForCells));
-                cell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Phrase(list[i].sum.ToString(), fontForCells));
-                cell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                table.AddCell(cell);
-                cell = new PdfPCell(new Phrase(list[i].status, fontForCells));
-                table.AddCell(cell);
-            }
-            cell = new PdfPCell(new Phrase("Итого:", fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_RIGHT,
-                Colspan = 4,
-                Border = 0
-            };
-            table.AddCell(cell);
-            cell = new PdfPCell(new Phrase(list.Sum(rec => rec.sum).ToString(), fontForCellBold))
-            {
-                HorizontalAlignment = Element.ALIGN_RIGHT,
-                Border = 0
-            };
-            table.AddCell(cell);
-            cell = new PdfPCell(new Phrase("", fontForCellBold))
-            {
-                Border = 0
-            };
-            table.AddCell(cell);
-            doc.Add(table);
-
-            doc.Close();
-        }
     }
 }

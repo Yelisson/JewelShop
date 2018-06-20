@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{22B85398-E965-490E-B128-BA48690524A2}</ProjectGuid>
+    <ProjectGuid>{837526D2-DA4C-4E85-965C-FB885768967B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JewelShopService</RootNamespace>
     <AssemblyName>JewelShopService</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -50,51 +50,98 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Word.15.0.4797.1003\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1000.523\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1000.523\lib\net40\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Design, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1000.523\lib\net40\Microsoft.ReportViewer.Design.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1000.523\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebDesign, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1000.523\lib\net40\Microsoft.ReportViewer.WebDesign.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1000.523\lib\net40\Microsoft.ReportViewer.WebForms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1000.523\lib\net40\Microsoft.ReportViewer.WinForms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.314.76\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http">
+      <HintPath>..\packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <HintPath>..\packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractDataBaseContext.cs" />
+    <Compile Include="BindingModels\BuyerBindingModel.cs" />
+    <Compile Include="BindingModels\ElementBindingModel.cs" />
+    <Compile Include="BindingModels\CustomerBindingModel.cs" />
+    <Compile Include="BindingModels\ProdOrderBindingModel.cs" />
     <Compile Include="BindingModels\AdornmentBindingModel.cs" />
     <Compile Include="BindingModels\AdornmentElementBindingModel.cs" />
-    <Compile Include="BindingModels\BuyerBindingModel.cs" />
-    <Compile Include="BindingModels\CustomerBindingModel.cs" />
-    <Compile Include="BindingModels\ElementBindingModel.cs" />
     <Compile Include="BindingModels\HangarBindingModel.cs" />
     <Compile Include="BindingModels\HangarElementBindingModel.cs" />
-    <Compile Include="BindingModels\ProdOrderBindingModel.cs" />
     <Compile Include="BindingModels\ReportBindingModel.cs" />
-    <Compile Include="DataList.cs" />
-    <Compile Include="ImplementationsBD\AdornmentServiceBD.cs" />
-    <Compile Include="ImplementationsBD\BuyerServiceBD.cs" />
-    <Compile Include="ImplementationsBD\CustomerServiceBD.cs" />
-    <Compile Include="ImplementationsBD\ElementServiceBD.cs" />
-    <Compile Include="ImplementationsBD\HangarServiceBD.cs" />
-    <Compile Include="ImplementationsBD\MainServiceBD.cs" />
+    <Compile Include="DataListSingleton.cs" />
+    <Compile Include="ImplementationsBD\AdornmentServiceDB.cs" />
+    <Compile Include="ImplementationsBD\BuyerServiceDB.cs" />
+    <Compile Include="ImplementationsBD\CustomerServiceDB.cs" />
+    <Compile Include="ImplementationsBD\ElementServiceDB.cs" />
+    <Compile Include="ImplementationsBD\HangarServiceDB.cs" />
+    <Compile Include="ImplementationsBD\MainServiceDB.cs" />
     <Compile Include="ImplementationsBD\ReportServiceBD.cs" />
-    <Compile Include="ImplementationsList\AdornmentServiceList.cs" />
     <Compile Include="ImplementationsList\BuyerServiceList.cs" />
-    <Compile Include="ImplementationsList\CustomerServiceList.cs" />
     <Compile Include="ImplementationsList\ElementServiceList.cs" />
-    <Compile Include="ImplementationsList\HangarServiceList.cs" />
+    <Compile Include="ImplementationsList\CustomerServiceList.cs" />
     <Compile Include="ImplementationsList\MainServiceList.cs" />
-    <Compile Include="Interfaces\IAdornmentService.cs" />
+    <Compile Include="ImplementationsList\AdornmentServiceList.cs" />
+    <Compile Include="ImplementationsList\HangarServiceList.cs" />
     <Compile Include="Interfaces\IBuyerService.cs" />
-    <Compile Include="Interfaces\ICustomerService.cs" />
     <Compile Include="Interfaces\IElementService.cs" />
-    <Compile Include="Interfaces\IHangarService.cs" />
+    <Compile Include="Interfaces\ICustomerService.cs" />
     <Compile Include="Interfaces\IMainService.cs" />
+    <Compile Include="Interfaces\IAdornmentService.cs" />
+    <Compile Include="Interfaces\IHangarService.cs" />
     <Compile Include="Interfaces\IReportService.cs" />
-    <Compile Include="Migrations\201803121524003_FirstMigration.cs" />
-    <Compile Include="Migrations\201803121524003_FirstMigration.Designer.cs">
-      <DependentUpon>201803121524003_FirstMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201806091332418_init.cs" />
+    <Compile Include="Migrations\201806091332418_init.Designer.cs">
+      <DependentUpon>201806091332418_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,36 +150,52 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\AdornmentElementViewModel.cs" />
-    <Compile Include="ViewModels\AdornmentViewModel.cs" />
+    <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="ViewModels\BuyerOrdersModel.cs" />
     <Compile Include="ViewModels\BuyerViewModel.cs" />
-    <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="ViewModels\ElementViewModel.cs" />
-    <Compile Include="ViewModels\HangarElementViewModel.cs" />
+    <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="ViewModels\HangarsLoadViewModel.cs" />
-    <Compile Include="ViewModels\HangarViewModel.cs" />
     <Compile Include="ViewModels\ProdOrderViewModel.cs" />
+    <Compile Include="ViewModels\AdornmentViewModel.cs" />
+    <Compile Include="ViewModels\AdornmentElementViewModel.cs" />
+    <Compile Include="ViewModels\HangarViewModel.cs" />
+    <Compile Include="ViewModels\HangarElementViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JewelShopModel\JewelShopModel.csproj">
-      <Project>{ddb938ab-351b-485b-8666-d3394d9231a4}</Project>
+      <Project>{80df828e-7385-4901-8ff4-950c983d881e}</Project>
       <Name>JewelShopModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="Resources\TIFCYR.ttf" />
+    <None Include="Resources\TIMCYR.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201803121524003_FirstMigration.resx">
-      <DependentUpon>201803121524003_FirstMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201806091332418_init.resx">
+      <DependentUpon>201806091332418_init.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

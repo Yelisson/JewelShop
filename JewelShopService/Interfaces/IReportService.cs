@@ -8,16 +8,10 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.Interfaces
 {
-    public interface IReportService
+   public interface IReportService
     {
         void SaveAdornmentPrice(ReportBindingModel model);
-
         List<HangarsLoadViewModel> GetHangarsLoad();
-
         void SaveHangarsLoad(ReportBindingModel model);
-
-        List<BuyerOrdersModel> GetBuyerOrders(ReportBindingModel model);
-
-        void SaveBuyerOrders(ReportBindingModel model);
     }
 }
