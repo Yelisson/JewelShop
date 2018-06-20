@@ -1,16 +1,16 @@
-﻿using JewelShopService.Interfaces;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
+using JewelShopService.Interfaces;
 using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JewelShopModel;
 
 namespace JewelShopService.ImplementationsList
 {
-    public class ElementServiceList:IElementService
+    public class ElementServiceList : IElementService
     {
         private DataListSingleton source;
 

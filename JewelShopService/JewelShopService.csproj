@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{22B85398-E965-490E-B128-BA48690524A2}</ProjectGuid>
+    <ProjectGuid>{837526D2-DA4C-4E85-965C-FB885768967B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JewelShopService</RootNamespace>
     <AssemblyName>JewelShopService</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -40,44 +40,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingModels\BuyerBindingModel.cs" />
+    <Compile Include="BindingModels\ElementBindingModel.cs" />
+    <Compile Include="BindingModels\CustomerBindingModel.cs" />
+    <Compile Include="BindingModels\ProdOrderBindingModel.cs" />
     <Compile Include="BindingModels\AdornmentBindingModel.cs" />
     <Compile Include="BindingModels\AdornmentElementBindingModel.cs" />
-    <Compile Include="BindingModels\BuyerBindingModel.cs" />
-    <Compile Include="BindingModels\CustomerBindingModel.cs" />
-    <Compile Include="BindingModels\ElementBindingModel.cs" />
     <Compile Include="BindingModels\HangarBindingModel.cs" />
     <Compile Include="BindingModels\HangarElementBindingModel.cs" />
-    <Compile Include="BindingModels\ProdOrderBindingModel.cs" />
-    <Compile Include="DataList.cs" />
-    <Compile Include="ImplementationsList\AdornmentServiceList.cs" />
+    <Compile Include="DataListSingleton.cs" />
     <Compile Include="ImplementationsList\BuyerServiceList.cs" />
-    <Compile Include="ImplementationsList\CustomerServiceList.cs" />
     <Compile Include="ImplementationsList\ElementServiceList.cs" />
-    <Compile Include="ImplementationsList\HangarServiceList.cs" />
+    <Compile Include="ImplementationsList\CustomerServiceList.cs" />
     <Compile Include="ImplementationsList\MainServiceList.cs" />
-    <Compile Include="Interfaces\IAdornmentService.cs" />
+    <Compile Include="ImplementationsList\AdornmentServiceList.cs" />
+    <Compile Include="ImplementationsList\HangarServiceList.cs" />
     <Compile Include="Interfaces\IBuyerService.cs" />
-    <Compile Include="Interfaces\ICustomerService.cs" />
     <Compile Include="Interfaces\IElementService.cs" />
-    <Compile Include="Interfaces\IHangarService.cs" />
+    <Compile Include="Interfaces\ICustomerService.cs" />
     <Compile Include="Interfaces\IMainService.cs" />
+    <Compile Include="Interfaces\IAdornmentService.cs" />
+    <Compile Include="Interfaces\IHangarService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\AdornmentElementViewModel.cs" />
-    <Compile Include="ViewModels\AdornmentViewModel.cs" />
     <Compile Include="ViewModels\BuyerViewModel.cs" />
-    <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="ViewModels\ElementViewModel.cs" />
-    <Compile Include="ViewModels\HangarElementViewModel.cs" />
-    <Compile Include="ViewModels\HangarViewModel.cs" />
+    <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="ViewModels\ProdOrderViewModel.cs" />
+    <Compile Include="ViewModels\AdornmentViewModel.cs" />
+    <Compile Include="ViewModels\AdornmentElementViewModel.cs" />
+    <Compile Include="ViewModels\HangarViewModel.cs" />
+    <Compile Include="ViewModels\HangarElementViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JewelShopModel\JewelShopModel.csproj">
-      <Project>{ddb938ab-351b-485b-8666-d3394d9231a4}</Project>
+      <Project>{80df828e-7385-4901-8ff4-950c983d881e}</Project>
       <Name>JewelShopModel</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

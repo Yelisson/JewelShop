@@ -1,7 +1,7 @@
-﻿using JewelShopService.Interfaces;
-using JewelShopService.ViewModels;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
-using JewelShopModel;
+using JewelShopService.Interfaces;
+using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.ImplementationsList
 {
-    public class AdornmentServiceList:IAdornmentService
+    public class AdornmentServiceList : IAdornmentService
     {
         private DataListSingleton source;
 
@@ -24,6 +24,7 @@ namespace JewelShopService.ImplementationsList
             List<AdornmentViewModel> result = new List<AdornmentViewModel>();
             for (int i = 0; i < source.Adornments.Count; ++i)
             {
+                // требуется дополнительно получить список компонентов для изделия и их количество
                 List<AdornmentElementViewModel> productComponents = new List<AdornmentElementViewModel>();
                 for (int j = 0; j < source.AdornmentElements.Count; ++j)
                 {
@@ -43,6 +44,7 @@ namespace JewelShopService.ImplementationsList
                             id = source.AdornmentElements[j].id,
                             adornmentId = source.AdornmentElements[j].adornmentId,
                             elementId = source.AdornmentElements[j].elementId,
+                            elementName = componentName,
                             count = source.AdornmentElements[j].count
                         });
                     }
@@ -51,8 +53,8 @@ namespace JewelShopService.ImplementationsList
                 {
                     id = source.Adornments[i].id,
                     adornmentName = source.Adornments[i].adornmentName,
-                    cost = source.Adornments[i].price,
-                    ProductComponent = productComponents
+                    price = source.Adornments[i].price,
+                    AdornmentElements = productComponents
                 });
             }
             return result;
@@ -62,6 +64,7 @@ namespace JewelShopService.ImplementationsList
         {
             for (int i = 0; i < source.Adornments.Count; ++i)
             {
+                // требуется дополнительно получить список компонентов для изделия и их количество
                 List<AdornmentElementViewModel> productComponents = new List<AdornmentElementViewModel>();
                 for (int j = 0; j < source.AdornmentElements.Count; ++j)
                 {
@@ -81,6 +84,7 @@ namespace JewelShopService.ImplementationsList
                             id = source.AdornmentElements[j].id,
                             adornmentId = source.AdornmentElements[j].adornmentId,
                             elementId = source.AdornmentElements[j].elementId,
+                            elementName = componentName,
                             count = source.AdornmentElements[j].count
                         });
                     }
@@ -91,14 +95,15 @@ namespace JewelShopService.ImplementationsList
                     {
                         id = source.Adornments[i].id,
                         adornmentName = source.Adornments[i].adornmentName,
-                        cost = source.Adornments[i].price,
-                        ProductComponent = productComponents
+                        price = source.Adornments[i].price,
+                        AdornmentElements = productComponents
                     };
                 }
             }
 
             throw new Exception("Элемент не найден");
         }
+
         public void AddElement(AdornmentBindingModel model)
         {
             int maxId = 0;
@@ -119,6 +124,7 @@ namespace JewelShopService.ImplementationsList
                 adornmentName = model.adornmentName,
                 price = model.cost
             });
+            // компоненты для изделия
             int maxPCId = 0;
             for (int i = 0; i < source.AdornmentElements.Count; ++i)
             {
@@ -127,27 +133,29 @@ namespace JewelShopService.ImplementationsList
                     maxPCId = source.AdornmentElements[i].id;
                 }
             }
-            for (int i = 0; i < model.AdornmentComponent.Count; ++i)
+            // убираем дубли по компонентам
+            for (int i = 0; i < model.AdornmentComponents.Count; ++i)
             {
-                for (int j = 1; j < model.AdornmentComponent.Count; ++j)
+                for (int j = 1; j < model.AdornmentComponents.Count; ++j)
                 {
-                    if (model.AdornmentComponent[i].elementId ==
-                        model.AdornmentComponent[j].elementId)
+                    if (model.AdornmentComponents[i].elementId ==
+                        model.AdornmentComponents[j].elementId)
                     {
-                        model.AdornmentComponent[i].count +=
-                            model.AdornmentComponent[j].count;
-                        model.AdornmentComponent.RemoveAt(j--);
+                        model.AdornmentComponents[i].count +=
+                            model.AdornmentComponents[j].count;
+                        model.AdornmentComponents.RemoveAt(j--);
                     }
                 }
             }
-            for (int i = 0; i < model.AdornmentComponent.Count; ++i)
+            // добавляем компоненты
+            for (int i = 0; i < model.AdornmentComponents.Count; ++i)
             {
                 source.AdornmentElements.Add(new AdornmentElement
                 {
                     id = ++maxPCId,
                     adornmentId = maxId + 1,
-                    elementId = model.AdornmentComponent[i].elementId,
-                    count = model.AdornmentComponent[i].count
+                    elementId = model.AdornmentComponents[i].elementId,
+                    count = model.AdornmentComponents[i].count
                 });
             }
         }
@@ -181,57 +189,63 @@ namespace JewelShopService.ImplementationsList
                     maxPCId = source.AdornmentElements[i].id;
                 }
             }
+            // обновляем существуюущие компоненты
             for (int i = 0; i < source.AdornmentElements.Count; ++i)
             {
                 if (source.AdornmentElements[i].adornmentId == model.id)
                 {
                     bool flag = true;
-                    for (int j = 0; j < model.AdornmentComponent.Count; ++j)
+                    for (int j = 0; j < model.AdornmentComponents.Count; ++j)
                     {
-                        if (source.AdornmentElements[i].id == model.AdornmentComponent[j].id)
+                        // если встретили, то изменяем количество
+                        if (source.AdornmentElements[i].id == model.AdornmentComponents[j].id)
                         {
-                            source.AdornmentElements[i].count = model.AdornmentComponent[j].count;
+                            source.AdornmentElements[i].count = model.AdornmentComponents[j].count;
                             flag = false;
                             break;
                         }
                     }
+                    // если не встретили, то удаляем
                     if (flag)
                     {
                         source.AdornmentElements.RemoveAt(i--);
                     }
                 }
             }
-            for (int i = 0; i < model.AdornmentComponent.Count; ++i)
+            // новые записи
+            for (int i = 0; i < model.AdornmentComponents.Count; ++i)
             {
-                if (model.AdornmentComponent[i].id == 0)
+                if (model.AdornmentComponents[i].id == 0)
                 {
+                    // ищем дубли
                     for (int j = 0; j < source.AdornmentElements.Count; ++j)
                     {
                         if (source.AdornmentElements[j].adornmentId == model.id &&
-                            source.AdornmentElements[j].elementId == model.AdornmentComponent[i].elementId)
+                            source.AdornmentElements[j].elementId == model.AdornmentComponents[i].elementId)
                         {
-                            source.AdornmentElements[j].count += model.AdornmentComponent[i].count;
-                            model.AdornmentComponent[i].id = source.AdornmentElements[j].id;
+                            source.AdornmentElements[j].count += model.AdornmentComponents[i].count;
+                            model.AdornmentComponents[i].id = source.AdornmentElements[j].id;
                             break;
                         }
                     }
-                    if (model.AdornmentComponent[i].id == 0)
+                    // если не нашли дубли, то новая запись
+                    if (model.AdornmentComponents[i].id == 0)
                     {
                         source.AdornmentElements.Add(new AdornmentElement
                         {
                             id = ++maxPCId,
                             adornmentId = model.id,
-                            elementId = model.AdornmentComponent[i].elementId,
-                            count = model.AdornmentComponent[i].count
+                            elementId = model.AdornmentComponents[i].elementId,
+                            count = model.AdornmentComponents[i].count
                         });
                     }
                 }
             }
-
         }
 
         public void DelElement(int id)
         {
+            // удаяем записи по компонентам при удалении изделия
             for (int i = 0; i < source.AdornmentElements.Count; ++i)
             {
                 if (source.AdornmentElements[i].adornmentId == id)

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.ImplementationsList
 {
-    public class MainServiceList: IMainService
+    public class MainServiceList : IMainService
     {
         private DataListSingleton source;
 
@@ -24,32 +24,32 @@ namespace JewelShopService.ImplementationsList
             List<ProdOrderViewModel> result = new List<ProdOrderViewModel>();
             for (int i = 0; i < source.ProdOrders.Count; ++i)
             {
-                string buyerFIO = string.Empty;
+                string clientFIO = string.Empty;
                 for (int j = 0; j < source.Buyers.Count; ++j)
                 {
-                    if (source.Buyers[j].id == source.ProdOrders[i].buyerId)
+                    if (source.Buyers[j].id == source.Buyers[i].id)
                     {
-                        buyerFIO = source.Buyers[j].buyerFIO;
+                        clientFIO = source.Buyers[j].buyerName;
                         break;
                     }
                 }
-                string adornmentName = string.Empty;
+                string productName = string.Empty;
                 for (int j = 0; j < source.Adornments.Count; ++j)
                 {
                     if (source.Adornments[j].id == source.ProdOrders[i].adornmentId)
                     {
-                        adornmentName = source.Adornments[j].adornmentName;
+                        productName = source.Adornments[j].adornmentName;
                         break;
                     }
                 }
-                string customerFIO = string.Empty;
+                string implementerFIO = string.Empty;
                 if (source.ProdOrders[i].customerId.HasValue)
                 {
                     for (int j = 0; j < source.Customers.Count; ++j)
                     {
                         if (source.Customers[j].id == source.ProdOrders[i].customerId.Value)
                         {
-                            customerFIO = source.Customers[j].customerFIO;
+                            implementerFIO = source.Customers[j].customerName;
                             break;
                         }
                     }
@@ -58,11 +58,11 @@ namespace JewelShopService.ImplementationsList
                 {
                     id = source.ProdOrders[i].id,
                     buyerId = source.ProdOrders[i].buyerId,
-                    buyerFIO = buyerFIO,
+                    buyerName = clientFIO,
                     adornmentId = source.ProdOrders[i].adornmentId,
-                    adornmentName = adornmentName,
+                    adornmentName = productName,
                     customerId = source.ProdOrders[i].customerId,
-                    customerName = customerFIO,
+                    customerName = implementerFIO,
                     count = source.ProdOrders[i].count,
                     sum = source.ProdOrders[i].sum,
                     DateCreate = source.ProdOrders[i].DateCreate.ToLongDateString(),
@@ -110,6 +110,7 @@ namespace JewelShopService.ImplementationsList
             {
                 throw new Exception("Элемент не найден");
             }
+            // смотрим по количеству компонентов на складах
             for (int i = 0; i < source.AdornmentElements.Count; ++i)
             {
                 if (source.AdornmentElements[i].adornmentId == source.ProdOrders[index].adornmentId)
@@ -117,7 +118,7 @@ namespace JewelShopService.ImplementationsList
                     int countOnStocks = 0;
                     for (int j = 0; j < source.HangarElements.Count; ++j)
                     {
-                        if (source.HangarElements[j].elementtId == source.AdornmentElements[i].elementId)
+                        if (source.HangarElements[j].elementId == source.AdornmentElements[i].elementId)
                         {
                             countOnStocks += source.HangarElements[j].count;
                         }
@@ -128,14 +129,14 @@ namespace JewelShopService.ImplementationsList
                         {
                             if (source.Elements[j].id == source.AdornmentElements[i].elementId)
                             {
-                                throw new Exception("Недостаточно компонента " + source.Elements[j].elementName +
-                                    " требуется " + source.AdornmentElements[i].count* source.ProdOrders[index].count +
-                                    ", в наличии " + countOnStocks);
+                                throw new Exception("Не достаточно компонента " + source.Elements[j].elementName +
+                                    " требуется " + source.AdornmentElements[i].count + ", в наличии " + countOnStocks);
                             }
                         }
                     }
                 }
             }
+            // списываем
             for (int i = 0; i < source.AdornmentElements.Count; ++i)
             {
                 if (source.AdornmentElements[i].adornmentId == source.ProdOrders[index].adornmentId)
@@ -143,8 +144,9 @@ namespace JewelShopService.ImplementationsList
                     int countOnStocks = source.AdornmentElements[i].count * source.ProdOrders[index].count;
                     for (int j = 0; j < source.HangarElements.Count; ++j)
                     {
-                        if (source.HangarElements[j].elementtId == source.AdornmentElements[i].elementId)
+                        if (source.HangarElements[j].elementId == source.AdornmentElements[i].elementId)
                         {
+                            // компонентов на одном слкаде может не хватать
                             if (source.HangarElements[j].count >= countOnStocks)
                             {
                                 source.HangarElements[j].count -= countOnStocks;
@@ -161,7 +163,7 @@ namespace JewelShopService.ImplementationsList
             }
             source.ProdOrders[index].customerId = model.customerId;
             source.ProdOrders[index].DateCustom = DateTime.Now;
-            source.ProdOrders[index].status = ProdOrderStatus.Выполняетя;
+            source.ProdOrders[index].status = ProdOrderStatus.Выполняется;
         }
 
         public void FinishOrder(int id)
@@ -206,9 +208,9 @@ namespace JewelShopService.ImplementationsList
             for (int i = 0; i < source.HangarElements.Count; ++i)
             {
                 if (source.HangarElements[i].hangarId == model.hangarId &&
-                    source.HangarElements[i].elementtId == model.elementId)
+                    source.HangarElements[i].elementId == model.elementId)
                 {
-                    source.HangarElements[i].count += model.Count;
+                    source.HangarElements[i].count += model.count;
                     return;
                 }
                 if (source.HangarElements[i].id > maxId)
@@ -220,8 +222,8 @@ namespace JewelShopService.ImplementationsList
             {
                 id = ++maxId,
                 hangarId = model.hangarId,
-                elementtId = model.elementId,
-                count = model.Count
+                elementId = model.elementId,
+                count = model.count
             });
         }
     }

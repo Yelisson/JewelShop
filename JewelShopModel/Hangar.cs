@@ -9,6 +9,7 @@ namespace JewelShopModel
     public class Hangar
     {
         public int id { get; set; }
+
         public string hangarName { get; set; }
     }
 }

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace JewelShopModel
 {
-   public class Buyer
+    public class Buyer
     {
         public int id { get; set; }
-        public string buyerFIO { get; set; }
+
+        public string buyerName { get; set; }
     }
 }

@@ -1,7 +1,7 @@
-﻿using JewelShopService.Interfaces;
-using JewelShopService.ViewModels;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
-using JewelShopModel;
+using JewelShopService.Interfaces;
+using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.ImplementationsList
 {
-    public class CustomerServiceList:ICustomerService
+    public class CustomerServiceList : ICustomerService
     {
         private DataListSingleton source;
 
@@ -27,7 +27,7 @@ namespace JewelShopService.ImplementationsList
                 result.Add(new CustomerViewModel
                 {
                     id = source.Customers[i].id,
-                    customerFIO = source.Customers[i].customerFIO
+                    customerName = source.Customers[i].customerName
                 });
             }
             return result;
@@ -42,7 +42,7 @@ namespace JewelShopService.ImplementationsList
                     return new CustomerViewModel
                     {
                         id = source.Customers[i].id,
-                        customerFIO = source.Customers[i].customerFIO
+                        customerName = source.Customers[i].customerName
                     };
                 }
             }
@@ -58,7 +58,7 @@ namespace JewelShopService.ImplementationsList
                 {
                     maxId = source.Customers[i].id;
                 }
-                if (source.Customers[i].customerFIO == model.customerFIO)
+                if (source.Customers[i].customerName == model.customerName)
                 {
                     throw new Exception("Уже есть сотрудник с таким ФИО");
                 }
@@ -66,7 +66,7 @@ namespace JewelShopService.ImplementationsList
             source.Customers.Add(new Customer
             {
                 id = maxId + 1,
-                customerFIO = model.customerFIO
+                customerName = model.customerName
             });
         }
 
@@ -79,7 +79,7 @@ namespace JewelShopService.ImplementationsList
                 {
                     index = i;
                 }
-                if (source.Customers[i].customerFIO == model.customerFIO &&
+                if (source.Customers[i].customerName == model.customerName &&
                     source.Customers[i].id != model.id)
                 {
                     throw new Exception("Уже есть сотрудник с таким ФИО");
@@ -89,7 +89,7 @@ namespace JewelShopService.ImplementationsList
             {
                 throw new Exception("Элемент не найден");
             }
-            source.Customers[index].customerFIO = model.customerFIO;
+            source.Customers[index].customerName = model.customerName;
         }
 
         public void DelElement(int id)

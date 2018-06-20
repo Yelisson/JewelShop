@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.ViewModels
 {
-  public  class HangarViewModel
+    public class HangarViewModel
     {
         public int id { get; set; }
+
         public string hangarName { get; set; }
-        public List<HangarElementViewModel> HangarElement { get; set; }
+
+        public List<HangarElementViewModel> HangarElements { get; set; }
     }
 }

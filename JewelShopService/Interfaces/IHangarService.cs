@@ -8,12 +8,16 @@ using System.Threading.Tasks;
 
 namespace JewelShopService.Interfaces
 {
-   public interface IHangarService
+    public interface IHangarService
     {
         List<HangarViewModel> GetList();
+
         HangarViewModel GetElement(int id);
+
         void AddElement(HangarBindingModel model);
+
         void UpdElement(HangarBindingModel model);
+
         void DelElement(int id);
     }
 }

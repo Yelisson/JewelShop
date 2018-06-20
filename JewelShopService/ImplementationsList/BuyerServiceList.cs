@@ -1,23 +1,24 @@
-﻿using JewelShopService.Interfaces;
-using JewelShopService.ViewModels;
+﻿using JewelShopModel;
 using JewelShopService.BindingModels;
+using JewelShopService.Interfaces;
+using JewelShopService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JewelShopModel;
 
 namespace JewelShopService.ImplementationsList
 {
     public class BuyerServiceList : IBuyerService
     {
         private DataListSingleton source;
+
         public BuyerServiceList()
         {
             source = DataListSingleton.GetInstance();
         }
-  
+
         public List<BuyerViewModel> GetList()
         {
             List<BuyerViewModel> result = new List<BuyerViewModel>();
@@ -26,10 +27,9 @@ namespace JewelShopService.ImplementationsList
                 result.Add(new BuyerViewModel
                 {
                     id = source.Buyers[i].id,
-                    buyerFIO = source.Buyers[i].buyerFIO
+                    buyerName = source.Buyers[i].buyerName
                 });
             }
-
             return result;
         }
 
@@ -42,7 +42,7 @@ namespace JewelShopService.ImplementationsList
                     return new BuyerViewModel
                     {
                         id = source.Buyers[i].id,
-                        buyerFIO = source.Buyers[i].buyerFIO
+                        buyerName = source.Buyers[i].buyerName
                     };
                 }
             }
@@ -58,18 +58,17 @@ namespace JewelShopService.ImplementationsList
                 {
                     maxId = source.Buyers[i].id;
                 }
-                if (source.Buyers[i].buyerFIO == model.buyerFIO)
+                if (source.Buyers[i].buyerName == model.buyerName)
                 {
-                    throw new Exception("Клиент с таким ФИО уже есть");
+                    throw new Exception("Уже есть клиент с таким ФИО");
                 }
             }
             source.Buyers.Add(new Buyer
             {
                 id = maxId + 1,
-                buyerFIO = model.buyerFIO
+                buyerName = model.buyerName
             });
         }
-
 
         public void UpdElement(BuyerBindingModel model)
         {
@@ -80,7 +79,7 @@ namespace JewelShopService.ImplementationsList
                 {
                     index = i;
                 }
-                if (source.Buyers[i].buyerFIO == model.buyerFIO &&
+                if (source.Buyers[i].buyerName == model.buyerName &&
                     source.Buyers[i].id != model.id)
                 {
                     throw new Exception("Уже есть клиент с таким ФИО");
@@ -90,7 +89,7 @@ namespace JewelShopService.ImplementationsList
             {
                 throw new Exception("Элемент не найден");
             }
-            source.Buyers[index].buyerFIO = model.buyerFIO;
+            source.Buyers[index].buyerName = model.buyerName;
         }
 
         public void DelElement(int id)

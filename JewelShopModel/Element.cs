@@ -8,7 +8,8 @@ namespace JewelShopModel
 {
     public class Element
     {
-        public int id { set; get; }
+        public int id { get; set; }
+
         public string elementName { get; set; }
     }
 }

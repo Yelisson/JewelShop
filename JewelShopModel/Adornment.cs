@@ -9,7 +9,9 @@ namespace JewelShopModel
     public class Adornment
     {
         public int id { get; set; }
+
         public string adornmentName { get; set; }
+
         public decimal price { get; set; }
     }
 }
